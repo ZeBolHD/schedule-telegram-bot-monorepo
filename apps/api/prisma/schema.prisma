@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TelegramUser {
+  id                   String                 @id @unique
+  firstName            String?                @map("first_name")
+  username             String?
+  createdAt            DateTime               @default(now()) @map("created_at")
+  userWithGroup        UserWithGroup[]
+  userWithSubscription UserWithSubscription[]
+
+  @@map("telegram_users")
+}
+
+model UserWithGroup {
+  userId  String       @map("user_id")
+  groupId Int          @map("group_id")
+  group   Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user    TelegramUser @relation(fields: [userId], references: [id])
+
+  @@id([userId, groupId])
+  @@map("user_with_group")
+}
+
+model Group {
+  id            Int             @id @unique @default(autoincrement())
+  code          String          @unique
+  facultyId     Int             @map("faculty_id")
+  grade         Int             @default(1)
+  studyType     Int             @default(0) @map("study_type")
+  fileId        String?         @map("file_id")
+  faculty       Faculty         @relation(fields: [facultyId], references: [id])
+  userWithGroup UserWithGroup[]
+
+  @@map("groups")
+}
+
+model UserWithSubscription {
+  userId         String       @map("user_id")
+  subscriptionId Int          @map("subscription_id")
+  user           TelegramUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, subscriptionId])
+  @@map("user_with_subscription")
+}
+
+model Faculty {
+  id     Int     @id @default(autoincrement())
+  name   String
+  groups Group[]
+
+  @@map("faculties")
+}
+
+model AdminUser {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  password  String   @map("password")
+  createdAt DateTime @default(now()) @map("created_at")
+  role      Role     @map("role")
+
+  Token Token[]
+
+  @@map("admin_users")
+}
+
+model Token {
+  token  String    @unique
+  exp    DateTime
+  user   AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String    @map("user_id")
+
+  @@map("tokens")
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
