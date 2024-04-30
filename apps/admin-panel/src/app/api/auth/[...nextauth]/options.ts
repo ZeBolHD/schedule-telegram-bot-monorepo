@@ -20,22 +20,17 @@ const authOptions: AuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.adminUser.findUnique({
           where: {
             name: credentials.username,
           },
         });
 
-        console.log(credentials);
-
         if (!user || !user?.password) {
           throw new Error("Invalid credentials");
         }
 
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isCorrectPassword = await bcrypt.compare(credentials.password, user.password);
 
         if (!isCorrectPassword) {
           throw new Error("Invalid credentials");

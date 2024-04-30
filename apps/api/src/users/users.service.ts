@@ -8,13 +8,13 @@ export class UsersService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findUser(id: string): Promise<AdminUser | null> {
-    this.logger.log(`Finding user ${id}`);
+  async findOne(nameOrId: string): Promise<AdminUser | null> {
+    this.logger.log(`Finding user ${nameOrId}`);
 
     const user = await this.prismaService.adminUser
-      .findUnique({
+      .findFirst({
         where: {
-          id: id,
+          OR: [{ id: nameOrId }, { name: nameOrId }],
         },
       })
       .catch(() => {
@@ -23,7 +23,12 @@ export class UsersService {
         return null;
       });
 
-    this.logger.log(`Found user ${user?.id}`);
+    if (!user) {
+      this.logger.error("User not found");
+      return null;
+    }
+
+    this.logger.log(`Found user ${user?.name}`);
 
     return user;
   }
