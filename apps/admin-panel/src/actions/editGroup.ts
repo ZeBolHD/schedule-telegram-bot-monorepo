@@ -1,12 +1,7 @@
-import { Group } from "@prisma/client";
+import { Group } from "@repo/database";
 import axios from "axios";
 
-const editGroup = async (
-  groupId: number,
-  notification: number,
-  file?: File,
-  grade?: number
-) => {
+const editGroup = async (groupId: number, notification: number, file?: File, grade?: number) => {
   try {
     const formData = new FormData();
     formData.append("groupId", String(groupId));

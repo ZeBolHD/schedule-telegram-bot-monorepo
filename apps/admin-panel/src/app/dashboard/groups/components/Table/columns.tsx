@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { Faculty } from "@prisma/client";
+import { Faculty } from "@repo/database";
 
 import { FullGroupType } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,8 +17,7 @@ const columns: ColumnDef<FullGroupType>[] = [
       <Checkbox
         className="border-white"
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       />
@@ -46,9 +45,7 @@ const columns: ColumnDef<FullGroupType>[] = [
   {
     accessorKey: "code",
     header: () => <div className="w-full text-center">Номер</div>,
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("code")}</div>
-    ),
+    cell: ({ row }) => <div className="text-center">{row.getValue("code")}</div>,
   },
   {
     id: "faculty",
@@ -88,24 +85,14 @@ const columns: ColumnDef<FullGroupType>[] = [
   },
   {
     accessorKey: "grade",
-    header: ({ column }) => (
-      <TableHeaderSortButton column={column} name="Курс" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("grade")}</div>
-    ),
+    header: ({ column }) => <TableHeaderSortButton column={column} name="Курс" />,
+    cell: ({ row }) => <div className="text-center">{row.getValue("grade")}</div>,
   },
   {
     accessorKey: "_count",
-    header: ({ column }) => (
-      <TableHeaderSortButton column={column} name="Пользователи" />
-    ),
+    header: ({ column }) => <TableHeaderSortButton column={column} name="Пользователи" />,
     cell: ({ row }) => {
-      return (
-        <div className="text-center">
-          {(row.getValue("_count") as any).userWithGroup}
-        </div>
-      );
+      return <div className="text-center">{(row.getValue("_count") as any).userWithGroup}</div>;
     },
   },
   {

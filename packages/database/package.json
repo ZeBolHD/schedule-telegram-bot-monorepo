@@ -1,0 +1,22 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "db:generate": "prisma generate && tsc",
+    "db:push": "dotenv -e ../../.env.development.local prisma db push && tsc",
+    "test": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

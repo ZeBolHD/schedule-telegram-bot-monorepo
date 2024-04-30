@@ -1,4 +1,4 @@
-import { Faculty, Group, TelegramUser } from "@prisma/client";
+import { Faculty, Group, TelegramUser } from "@repo/database";
 
 export type FullGroupType = Group & {
   _count: {

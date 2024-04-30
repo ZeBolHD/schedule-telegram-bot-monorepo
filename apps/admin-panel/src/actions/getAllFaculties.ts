@@ -1,4 +1,4 @@
-import { Faculty } from "@prisma/client";
+import { Faculty } from "@repo/database";
 import axios from "axios";
 
 const getAllFaculties = async () => {

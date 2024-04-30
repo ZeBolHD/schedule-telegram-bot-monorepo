@@ -1,12 +1,8 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import {
-  ColumnFiltersState,
-  RowSelectionState,
-  Updater,
-} from "@tanstack/react-table";
-import { Faculty } from "@prisma/client";
+import { ColumnFiltersState, RowSelectionState, Updater } from "@tanstack/react-table";
+import { Faculty } from "@repo/database";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorFetchBlock from "@/components/ErrorBlock";

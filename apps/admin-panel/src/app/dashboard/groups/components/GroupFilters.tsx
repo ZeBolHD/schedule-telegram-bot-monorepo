@@ -1,6 +1,6 @@
 "use client";
 
-import { Faculty } from "@prisma/client";
+import { Faculty } from "@repo/database";
 import { ColumnFiltersState, Updater } from "@tanstack/react-table";
 
 import {
@@ -60,11 +60,7 @@ const GroupFilters = ({ faculties, setColumnFilters }: GroupFiltersProps) => {
                 Любой
               </SelectItem>
               {faculties.map((faculty) => (
-                <SelectItem
-                  key={faculty.id}
-                  value={String(faculty.id)}
-                  className="cursor-pointer"
-                >
+                <SelectItem key={faculty.id} value={String(faculty.id)} className="cursor-pointer">
                   {faculty.name}
                 </SelectItem>
               ))}

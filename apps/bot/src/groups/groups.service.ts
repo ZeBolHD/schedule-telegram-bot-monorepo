@@ -1,6 +1,6 @@
 import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable, Logger } from "@nestjs/common";
-import { Group, UserWithGroup } from "@prisma/client";
+import { Group, UserWithGroup } from "@repo/database";
 
 @Injectable()
 export class GroupsService {

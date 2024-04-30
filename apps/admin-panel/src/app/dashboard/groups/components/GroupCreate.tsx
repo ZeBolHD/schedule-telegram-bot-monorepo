@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import { Faculty } from "@prisma/client";
+import { Faculty } from "@repo/database";
 import { toast } from "react-hot-toast";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
@@ -93,23 +93,13 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
                 rules={{ required: true }}
                 render={({ field }) => {
                   return (
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      required
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value} required>
                       <SelectTrigger className="mt-2">
-                        <SelectValue
-                          placeholder="Выберите факультет"
-                          id="facultyId"
-                        />
+                        <SelectValue placeholder="Выберите факультет" id="facultyId" />
                       </SelectTrigger>
                       <SelectContent>
                         {faculties?.map((faculty) => (
-                          <SelectItem
-                            key={faculty.id}
-                            value={faculty.id.toString()}
-                          >
+                          <SelectItem key={faculty.id} value={faculty.id.toString()}>
                             {faculty.name}
                           </SelectItem>
                         ))}
@@ -130,11 +120,7 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
                 rules={{ required: true }}
                 render={({ field }) => {
                   return (
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      required
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value} required>
                       <SelectTrigger className="mt-2">
                         <SelectValue placeholder="Выберите форму обучения" />
                       </SelectTrigger>
@@ -163,12 +149,7 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
           </CardContent>
           <CardFooter>
             <div className="w-full flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={onCloseModal}
-                className="mr-5"
-              >
+              <Button type="button" variant="ghost" onClick={onCloseModal} className="mr-5">
                 Отмена
               </Button>
               <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
