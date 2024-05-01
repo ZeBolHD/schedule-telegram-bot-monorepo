@@ -20,7 +20,7 @@ import { ConfigService } from "@nestjs/config";
 
 const REFRESH_TOKEN = "refresh_token";
 
-@Controller()
+@Controller("auth")
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
