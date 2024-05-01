@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { RolesGuard } from "@auth/guards/role.guard";
 import { Roles } from "@common/decorators";
 import { Role } from "@repo/database";
@@ -31,7 +31,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Roles(Role.SUPER_ADMIN)
   @Delete(":id")
-  async findOne(@Body("id") id: string) {
+  async findOne(@Param("id") id: string) {
     const user = await this.userService.delete(id);
 
     return user;

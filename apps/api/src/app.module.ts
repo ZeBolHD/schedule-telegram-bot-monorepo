@@ -5,9 +5,16 @@ import { UsersModule } from "./users/users.module";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "@auth/guards/auth.guard";
+import { FacultiesModule } from "./faculties/faculties.module";
 
 @Module({
-  imports: [AuthModule, PrismaModule, UsersModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    UsersModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    FacultiesModule,
+  ],
   providers: [
     {
       provide: APP_GUARD,
