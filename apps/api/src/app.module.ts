@@ -6,6 +6,7 @@ import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "@auth/guards/auth.guard";
 import { FacultiesModule } from "./faculties/faculties.module";
+import { GroupsModule } from "./groups/groups.module";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FacultiesModule } from "./faculties/faculties.module";
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     FacultiesModule,
+    GroupsModule,
   ],
   providers: [
     {

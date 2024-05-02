@@ -10,7 +10,7 @@ export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findOne(nameOrId: string): Promise<AdminUser | null> {
-    this.logger.log(`Finding user ${nameOrId}`);
+    // this.logger.log(`Finding user ${nameOrId}`);
 
     const user = await this.prismaService.adminUser
       .findFirst({
@@ -29,7 +29,7 @@ export class UsersService {
       return null;
     }
 
-    this.logger.log(`Found user ${user?.name}`);
+    // this.logger.log(`Found user ${user?.name}`);
 
     return user;
   }
