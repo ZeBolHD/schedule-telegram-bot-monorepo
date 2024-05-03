@@ -55,6 +55,8 @@ export class GroupsService {
   }
 
   async create(group: CreateGroupDto) {
+    this.logger.log(`Creating group ${group.code}`);
+
     const existGroup = await this.prismaService.group
       .findUnique({
         where: {
@@ -72,8 +74,6 @@ export class GroupsService {
       throw new ConflictException(`Group with code ${group.code} already exists`);
     }
 
-    this.logger.log(`Creating group ${group.code}`);
-
     const createdGroup = await this.prismaService.group.create({ data: group }).catch((e) => {
       this.logger.error(`Failed to create group ${group.code}`);
       this.logger.error(e);
@@ -89,12 +89,12 @@ export class GroupsService {
   async delete(id: number) {
     const group = await this.prismaService.group.findUnique({ where: { id } });
 
+    this.logger.log(`Deleting group ${id}`);
+
     if (!group) {
       this.logger.error(`Group with id ${id} not found`);
       throw new BadRequestException(`Group with id ${id} not found`);
     }
-
-    this.logger.log(`Deleting group ${id}`);
 
     const deletedGroup = await this.prismaService.group
       .delete({

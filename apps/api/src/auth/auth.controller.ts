@@ -5,17 +5,18 @@ import {
   Get,
   HttpStatus,
   Post,
+  Req,
   Res,
   UnauthorizedException,
-  UseGuards,
+  ValidationPipe,
 } from "@nestjs/common";
 import { LoginDto } from "./dto";
 import { AuthService } from "./auth.service";
-import { Public, Roles } from "@common/decorators";
+import { Cookies, Public, Roles } from "@common/decorators";
 import { Role } from "@repo/database";
 import { RolesGuard } from "./guards/role.guard";
 import { Tokens } from "./interfaces";
-import { Response } from "express";
+import type { Request, Response } from "express";
 import { ConfigService } from "@nestjs/config";
 
 const REFRESH_TOKEN = "refresh_token";
@@ -29,7 +30,7 @@ export class AuthController {
 
   @Public()
   @Post("login")
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async login(@Body(new ValidationPipe()) loginDto: LoginDto, @Res() res: Response) {
     const userWithTokens = await this.authService.login(loginDto);
 
     if (!userWithTokens) {
@@ -42,11 +43,36 @@ export class AuthController {
     this.setRefreshTokenToCookies(userWithTokens, res, data);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(Role.SUPER_ADMIN)
-  @Get("hello")
-  getHello(): string {
-    return "Hello World!";
+  @Public()
+  @Get("refresh-tokens")
+  async refresh(
+    @Cookies(REFRESH_TOKEN) refreshToken: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const [type, token] = req.headers.authorization?.split(" ") ?? [];
+
+    if (type === "Refresh") {
+      refreshToken = token;
+    }
+
+    if (!refreshToken) {
+      throw new UnauthorizedException("Пользователь не авторизован");
+    }
+
+    const tokens = await this.authService.refreshTokens(refreshToken);
+
+    if (!tokens) {
+      throw new UnauthorizedException();
+    }
+
+    const expiresIn = this.authService.getExpireTime();
+
+    this.setRefreshTokenToCookies(tokens, res, {
+      ...tokens,
+      expiresIn,
+      refreshToken: tokens.refreshToken.token,
+    });
   }
 
   private setRefreshTokenToCookies(tokens: Tokens, res: Response, data?: any) {
