@@ -14,26 +14,27 @@ export class UsersController {
   @Roles(Role.SUPER_ADMIN)
   @Post("create")
   async createUser(@Body() dto: CreateUserDto) {
-    const user = await this.userService.createUser(dto);
-
-    return user;
+    return await this.userService.createUser(dto);
   }
 
   @UseGuards(RolesGuard)
   @Roles(Role.SUPER_ADMIN)
   @Get()
   async findAll() {
-    const users = this.userService.findAll();
-
-    return users;
+    return await this.userService.findAll();
   }
 
   @UseGuards(RolesGuard)
   @Roles(Role.SUPER_ADMIN)
   @Delete(":id")
   async findOne(@Param("id") id: string) {
-    const user = await this.userService.delete(id);
+    return await this.userService.delete(id);
+  }
 
-    return user;
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN)
+  @Get("telegram")
+  async findOneById() {
+    return await this.userService.findAllTelegram();
   }
 }

@@ -56,7 +56,7 @@ export class UsersService {
       })
       .catch(() => {
         this.logger.error("Failed to find user");
-        return null;
+        throw new BadRequestException("Failed to find user");
       });
 
     if (userExists) {
@@ -70,12 +70,12 @@ export class UsersService {
       })
       .catch(() => {
         this.logger.error("Failed to create user");
-        return null;
+        throw new BadRequestException("Failed to create user");
       });
 
     if (!createdUser) {
       this.logger.error("Failed to create user");
-      return null;
+      throw new BadRequestException("Failed to create user");
     }
 
     this.logger.log(`Created user ${createdUser.name}`);
@@ -108,16 +108,41 @@ export class UsersService {
       .catch(() => {
         this.logger.error("Failed to delete user");
         throw new BadRequestException("Failed to delete user");
-        return null;
       });
 
     if (!deletedUser) {
       this.logger.error("Failed to delete user");
-      return null;
+      throw new BadRequestException("Failed to delete user");
     }
 
     this.logger.log(`Deleted user ${deletedUser.name}`);
 
     return deletedUser;
+  }
+
+  async findAllTelegram() {
+    this.logger.log("Finding all telegram users");
+
+    const telegramUsers = await this.prismaService.telegramUser.findMany({
+      include: {
+        userWithGroup: {
+          include: {
+            group: true,
+          },
+        },
+      },
+    });
+
+    const users = telegramUsers.map((telegramUser) => ({
+      id: telegramUser.id,
+      username: telegramUser.username,
+      firstName: telegramUser.firstName,
+      createdAt: telegramUser.createdAt,
+      groups: telegramUser.userWithGroup.map((user) => user.group.code),
+    }));
+
+    this.logger.log(`Found ${telegramUsers.length} telegram users`);
+
+    return users;
   }
 }
