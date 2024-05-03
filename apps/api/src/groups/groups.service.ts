@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "@prisma/prisma.service";
-import { CreateGroupDto } from "./dto";
+import { CreateGroupDto, UpdateScheduleDto } from "./dto";
 import { FindAllQueryDto } from "./dto/find-all-query.dto";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { BotService } from "src/bot/bot.service";
@@ -179,5 +179,63 @@ export class GroupsService {
     this.logger.log(`Deleted group ${id}`);
 
     return deletedGroup;
+  }
+
+  async updateSchedule(
+    dto: UpdateScheduleDto,
+    notification: boolean,
+    scheduleFile: Express.Multer.File,
+  ) {
+    this.logger.log(`Updating schedule for groups ${dto.groupIds.join(",")}`);
+
+    const groups = await this.prismaService.group
+      .findMany({
+        where: {
+          id: {
+            in: dto.groupIds,
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(`Failed to find groups ${dto.groupIds.join(",")}`);
+        this.logger.error(e);
+        throw new BadRequestException(`Failed to find groups ${dto.groupIds.join(",")}`);
+      });
+
+    if (groups.length !== dto.groupIds.length) {
+      this.logger.error(`Failed to find groups ${dto.groupIds.join(",")}`);
+      throw new BadRequestException(`Failed to find groups ${dto.groupIds.join(",")}`);
+    }
+
+    const documentId = await this.botService.getDocumentId(scheduleFile);
+
+    await this.prismaService.group
+      .updateMany({
+        where: {
+          id: {
+            in: dto.groupIds,
+          },
+        },
+        data: {
+          fileId: documentId,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(`Failed to update groups ${dto.groupIds.join(",")}`);
+        this.logger.error(e);
+        throw new BadRequestException(`Failed to update groups ${dto.groupIds.join(",")}`);
+      });
+
+    this.logger.log(`Updated schedule for groups ${dto.groupIds.join(",")}`);
+
+    console.log(notification);
+
+    if (notification) {
+      for (const group of groups) {
+        await this.notificationService.sendScheduleNotificationToGroup(group.id, documentId);
+      }
+    }
+
+    return groups;
   }
 }

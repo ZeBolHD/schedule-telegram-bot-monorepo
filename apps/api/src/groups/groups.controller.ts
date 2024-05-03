@@ -15,7 +15,7 @@ import { RolesGuard } from "@auth/guards/role.guard";
 import { Roles } from "@common/decorators";
 import { Role } from "@repo/database";
 
-import { CreateGroupDto, FindAllQueryDto, EditGroupDto } from "./dto";
+import { CreateGroupDto, FindAllQueryDto, EditGroupDto, UpdateScheduleDto } from "./dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("groups")
@@ -61,5 +61,17 @@ export class GroupsController {
     @UploadedFile() document: Express.Multer.File,
   ) {
     return await this.groupsService.edit(id, dto, notification, document);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseInterceptors(FileInterceptor("document"))
+  @Post("schedule")
+  async updateSchedule(
+    @Body() dto: UpdateScheduleDto,
+    @Query("notification") notification: boolean,
+    @UploadedFile() document: Express.Multer.File,
+  ) {
+    return await this.groupsService.updateSchedule(dto, notification, document);
   }
 }
