@@ -7,17 +7,12 @@ import toast from "react-hot-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface AuthFormInput {
-  username: string;
+  name: string;
   password: string;
 }
 
@@ -39,17 +34,19 @@ const AuthForm = () => {
       router.push("/dashboard");
     }
 
+    console.log(callback);
+
     if (callback.error) {
       toast.error("Неверные данные");
     }
   };
 
   const onSubmit: SubmitHandler<AuthFormInput> = (data) => {
-    const username = data.username;
+    const name = data.name;
     const password = data.password;
 
     signIn("credentials", {
-      username,
+      name,
       password,
       redirect: false,
     })
@@ -70,19 +67,11 @@ const AuthForm = () => {
         <CardContent>
           <div className="">
             <Label htmlFor="username">Имя пользователя</Label>
-            <Input
-              type="text"
-              className="mt-3"
-              {...register("username", { required: true })}
-            />
+            <Input type="text" className="mt-3" {...register("name", { required: true })} />
           </div>
           <div className="mt-5">
             <Label htmlFor="password">Пароль</Label>
-            <Input
-              type="password"
-              className="mt-3"
-              {...register("password", { required: true })}
-            />
+            <Input type="password" className="mt-3" {...register("password", { required: true })} />
           </div>
         </CardContent>
         <CardFooter>
