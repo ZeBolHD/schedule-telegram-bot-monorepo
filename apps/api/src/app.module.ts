@@ -8,6 +8,7 @@ import { JwtAuthGuard } from "@auth/guards/auth.guard";
 import { FacultiesModule } from "./faculties/faculties.module";
 import { GroupsModule } from "./groups/groups.module";
 import { NotificationsModule } from "./notifications/notifications.module";
+import { BotModule } from "./bot/bot.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationsModule } from "./notifications/notifications.module";
     FacultiesModule,
     GroupsModule,
     NotificationsModule,
+    BotModule,
   ],
   providers: [
     {

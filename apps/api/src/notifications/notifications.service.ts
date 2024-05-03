@@ -65,6 +65,37 @@ export class NotificationsService {
     this.logger.log(`Sent news with heading: ${dto.heading}`);
   }
 
+  async sendScheduleNotificationToGroup(groupId: number, fileId: string) {
+    const text = "Ваше расписание изменено!";
+
+    this.logger.log(`Sending schedule notification to group ${groupId}`);
+
+    const usersWithGroup = await this.prismaService.userWithGroup.findMany({
+      where: {
+        groupId,
+      },
+    });
+
+    const usersWithSubscription = await this.prismaService.userWithSubscription.findMany({
+      where: {
+        subscriptionId: 1,
+        AND: {
+          userId: {
+            in: usersWithGroup.map((user) => user.userId),
+          },
+        },
+      },
+    });
+
+    const chatIds = usersWithSubscription.map((user) => user.userId);
+
+    for (const chatId of chatIds) {
+      await this.botService.sendDocument(chatId, text, fileId);
+    }
+
+    this.logger.log(`Sent schedule notification to group ${groupId}`);
+  }
+
   private async sendTelegramMessage(
     chatId: string,
     messageText: string,
@@ -90,7 +121,7 @@ export class NotificationsService {
     const media: InputMediaPhoto[] = [];
 
     for (const image of images) {
-      const id = await this.getImageId(image);
+      const id = await this.botService.getImageId(image);
 
       media.push({
         media: id,
@@ -103,12 +134,5 @@ export class NotificationsService {
     this.logger.log("Got media fileIds");
 
     return media;
-  }
-
-  private async getImageId(image: Express.Multer.File): Promise<string> {
-    return this.botService.sendPhoto(this.CHAT_ID, {
-      source: image.buffer,
-      filename: image.originalname,
-    });
   }
 }
