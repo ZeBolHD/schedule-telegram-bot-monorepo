@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import prisma from "@/libs/prismadb";
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import prisma from "@/lib/prismadb";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function DELETE(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();

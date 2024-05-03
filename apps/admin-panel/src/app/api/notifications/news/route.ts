@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { NextRequest, NextResponse } from "next/server";
 
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 
 import {
   TELEGRAM_SENDMEDIAGROUP_URL,
@@ -11,7 +11,7 @@ import {
 } from "@/consts";
 import { Media } from "@/types";
 
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function POST(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();
@@ -32,9 +32,7 @@ export async function POST(req: NextRequest) {
 
   const isWithMedia = images.length !== 0;
 
-  const url = isWithMedia
-    ? TELEGRAM_SENDMEDIAGROUP_URL
-    : TELEGRAM_SENDMESSAGE_URL;
+  const url = isWithMedia ? TELEGRAM_SENDMEDIAGROUP_URL : TELEGRAM_SENDMESSAGE_URL;
 
   let media: Media[] = [];
 

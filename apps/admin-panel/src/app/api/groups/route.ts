@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
-import prisma from "@/libs/prismadb";
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import prisma from "@/lib/prismadb";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function GET() {
   const isSessionAuthorized = await checkIsSessionAuthorized();

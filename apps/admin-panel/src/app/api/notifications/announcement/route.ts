@@ -2,9 +2,9 @@ import axios from "axios";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 import { TELEGRAM_SENDMESSAGE_URL } from "@/consts";
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function POST(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();

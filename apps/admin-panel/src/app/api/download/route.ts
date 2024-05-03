@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { TELEGRAM_DOWNLOAD_URL, TELEGRAM_GETFILE_URL } from "@/consts";
 
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function GET(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();
@@ -18,9 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { data: filePathData } = await axios.get(
-      TELEGRAM_GETFILE_URL + fileId
-    );
+    const { data: filePathData } = await axios.get(TELEGRAM_GETFILE_URL + fileId);
     const filePath = filePathData.result.file_path;
 
     const res = await axios.get(TELEGRAM_DOWNLOAD_URL + filePath);

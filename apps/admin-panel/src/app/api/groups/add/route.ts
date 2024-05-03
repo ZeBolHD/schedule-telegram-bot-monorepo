@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import prisma from "@/libs/prismadb";
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import prisma from "@/lib/prismadb";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function POST(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();
@@ -32,9 +32,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ group });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Group already exists" },
-      { status: 409 }
-    );
+    return NextResponse.json({ error: "Group already exists" }, { status: 409 });
   }
 }

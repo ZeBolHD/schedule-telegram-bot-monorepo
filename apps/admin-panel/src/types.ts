@@ -8,14 +8,7 @@ export type FullGroupType = Group & {
 };
 
 export type FullTelegramUserType = TelegramUser & {
-  _count: {
-    userWithGroup: number;
-  };
-  userWithGroup: {
-    group: {
-      code: string;
-    };
-  }[];
+  groups: string[];
 };
 
 export type GroupCreateType = {

@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { TELEGRAM_SENDDOCUMENT_URL, TELEGRAM_UPLOAD_CHATID } from "@/consts";
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 
-import checkIsSessionAuthorized from "@/libs/checkSessionAuthorized";
+import checkIsSessionAuthorized from "@/lib/checkSessionAuthorized";
 
 export async function POST(req: NextRequest) {
   const isSessionAuthorized = await checkIsSessionAuthorized();
@@ -61,25 +61,22 @@ export async function POST(req: NextRequest) {
 
       const groupsChatIds = users.map((user) => user.userId);
 
-      const usersWithGroupSubscription =
-        await prisma.userWithSubscription.findMany({
-          where: {
-            userId: {
-              in: groupsChatIds,
-            },
-            subscriptionId: 1,
+      const usersWithGroupSubscription = await prisma.userWithSubscription.findMany({
+        where: {
+          userId: {
+            in: groupsChatIds,
           },
-          select: {
-            userId: true,
-          },
-        });
+          subscriptionId: 1,
+        },
+        select: {
+          userId: true,
+        },
+      });
 
-      const usersWithGroupSubscriptionIds = usersWithGroupSubscription.map(
-        (user) => user.userId
-      );
+      const usersWithGroupSubscriptionIds = usersWithGroupSubscription.map((user) => user.userId);
 
       const chatIds = groupsChatIds.filter((chatId) =>
-        usersWithGroupSubscriptionIds.includes(chatId)
+        usersWithGroupSubscriptionIds.includes(chatId),
       );
 
       if (chatIds.length > 0) {
