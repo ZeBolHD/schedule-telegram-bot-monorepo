@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "@prisma/prisma.service";
 import { SendAnnouncementDto, SendNewsDto } from "./dto";
-import { Media } from "./types";
-import axios from "axios";
+import { BotService } from "src/bot/bot.service";
+import { InputMediaPhoto } from "telegraf/typings/core/types/typegram";
 
 @Injectable()
 export class NotificationsService {
@@ -12,6 +12,7 @@ export class NotificationsService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
+    private readonly botService: BotService,
   ) {}
 
   private BOT_TOKEN = this.configService.get<string>("BOT_TOKEN", "");
@@ -42,12 +43,12 @@ export class NotificationsService {
     this.logger.log(`Sent announcement with heading: ${dto.heading}`);
   }
 
-  async sendNews(dto: SendNewsDto) {
+  async sendNews(dto: SendNewsDto, images: Express.Multer.File[]) {
     this.logger.log(`Sending news with heading: ${dto.heading}`);
 
     const messageText = `*${dto.heading}*` + "\n\n" + dto.text;
 
-    const media: Media[] = await this.getMedia(dto.images, messageText);
+    const media: InputMediaPhoto[] = await this.getMedia(images, messageText);
 
     const users = await this.prismaService.userWithSubscription.findMany({
       where: {
@@ -64,54 +65,36 @@ export class NotificationsService {
     this.logger.log(`Sent news with heading: ${dto.heading}`);
   }
 
-  async sendTelegramDocument(chatId: string, document: Blob) {
-    const url = this.SENDDOCUMENT_URL;
-
-    await axios
-      .post(url, {
-        chat_id: chatId,
-        document,
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        this.logger.error(`Failed to send document to ${chatId}`);
-
-        throw new InternalServerErrorException("Failed to send document");
-      });
+  private async sendTelegramMessage(
+    chatId: string,
+    messageText: string,
+    media?: InputMediaPhoto[],
+  ) {
+    if (media && media.length > 0) {
+      await this.botService.sendMediaGroup(chatId, media);
+    } else {
+      await this.botService.sendMessage(chatId, messageText);
+    }
   }
 
-  private async sendTelegramMessage(chatId: string, messageText: string, media?: Media[]) {
-    const url = media && media.length > 0 ? this.SENDMEDIAGROUP_URL : this.SENDMESSAGE_URL;
-    await axios
-      .post(url, {
-        chat_id: chatId,
-        text: messageText,
-        media,
-        parse_mode: "Markdown",
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        this.logger.error(`Failed to send message to ${chatId}`);
-
-        throw new InternalServerErrorException("Failed to send message");
-      });
-  }
-
-  private async getMedia(images: Blob[], messageText: string): Promise<Media[]> {
+  private async getMedia(
+    images: Express.Multer.File[],
+    messageText: string,
+  ): Promise<InputMediaPhoto[]> {
     if (!images || images.length === 0) {
       return [];
     }
 
     this.logger.log("Getting media fileIds");
 
-    const media: Media[] = [];
+    const media: InputMediaPhoto[] = [];
 
     for (const image of images) {
       const id = await this.getImageId(image);
 
       media.push({
-        type: "photo",
         media: id,
+        type: "photo",
       });
     }
 
@@ -122,24 +105,10 @@ export class NotificationsService {
     return media;
   }
 
-  private async getImageId(document: Blob) {
-    const formData: FormData = new FormData();
-
-    formData.append("chat_id", this.CHAT_ID);
-    formData.append("image", document);
-
-    const { data } = await axios
-      .post(this.SENDPHOTO_URL, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        this.logger.error("Failed to send image");
-        throw new InternalServerErrorException("Failed to send image");
-      });
-
-    return data.result.photo[0].file_id;
+  private async getImageId(image: Express.Multer.File): Promise<string> {
+    return this.botService.sendPhoto(this.CHAT_ID, {
+      source: image.buffer,
+      filename: image.originalname,
+    });
   }
 }

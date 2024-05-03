@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UseGuards, UseInterceptors } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { Body, Controller, Post, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import { Roles } from "@common/decorators";
 import { Role } from "@repo/database";
 import { RolesGuard } from "@auth/guards/role.guard";
@@ -20,9 +20,9 @@ export class NotificationsController {
 
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  @UseInterceptors(FileInterceptor("images"))
+  @UseInterceptors(FilesInterceptor("images"))
   @Post("news")
-  async sendNews(@Body() dto: SendNewsDto) {
-    return this.notificationsService.sendNews(dto);
+  async sendNews(@Body() dto: SendNewsDto, @UploadedFiles() images: Express.Multer.File[]) {
+    return this.notificationsService.sendNews(dto, images);
   }
 }
