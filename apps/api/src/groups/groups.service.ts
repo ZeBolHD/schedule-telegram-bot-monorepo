@@ -22,6 +22,10 @@ export class GroupsService {
   ) {}
 
   async findAll(query: FindAllQueryDto) {
+    this.logger.log(`Finding all groups`);
+
+    console.log(query);
+
     const groupsExists = await this.prismaService.group.findMany({
       skip: query.page * query.pageSize - query.pageSize,
       take: query.pageSize,
@@ -30,6 +34,7 @@ export class GroupsService {
         facultyId: query.facultyId,
         grade: query.grade,
       },
+      orderBy: { userWithGroup: { _count: query.userCountSort } },
       select: {
         id: true,
         code: true,
@@ -56,6 +61,8 @@ export class GroupsService {
 
     const count = groupsExists.length;
     const pageCount = Math.ceil(count / query.pageSize);
+
+    this.logger.log(`Found ${count} groups`);
 
     return { groups, count, page: query.page, pageSize: query.pageSize, pageCount };
   }
