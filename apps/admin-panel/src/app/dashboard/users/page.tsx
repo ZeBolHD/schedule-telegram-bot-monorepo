@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import getAllUsers from "@/actions/getAllUsers";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorFetchBlock from "@/components/ErrorBlock";
 import { FullTelegramUserType } from "@/types";
@@ -10,6 +9,7 @@ import { FullTelegramUserType } from "@/types";
 import UserTable from "./components/Table";
 
 import { useSession } from "next-auth/react";
+import getAllTelegramUsers from "@/actions/getAllTelegramUsers";
 
 const UsersPage = () => {
   const [users, setUsers] = useState<FullTelegramUserType[] | null>([]);
@@ -18,16 +18,22 @@ const UsersPage = () => {
   const session = useSession();
 
   const fetchUsers = async () => {
+    const accessToken = session.data?.accessToken;
+
+    if (!accessToken) return;
+
     setIsLoading(true);
 
-    const users = await getAllUsers(session.data?.accessToken!);
+    const users = await getAllTelegramUsers(accessToken);
     setUsers(users);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [session]);
+    if (session.data?.accessToken) {
+      fetchUsers();
+    }
+  }, [session.data?.accessToken]);
 
   if (isLoading) {
     return <LoadingSpinner size={100} />;
