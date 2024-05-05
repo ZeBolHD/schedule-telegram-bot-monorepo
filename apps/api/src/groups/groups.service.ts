@@ -41,6 +41,7 @@ export class GroupsService {
         grade: true,
         studyType: true,
         facultyId: true,
+        faculty: true,
         fileId: true,
         userWithGroup: {
           select: {
@@ -56,6 +57,7 @@ export class GroupsService {
       grade: group.grade,
       studyType: group.studyType,
       facultyId: group.facultyId,
+      facultyName: group.faculty.name,
       userCount: group.userWithGroup.length,
     }));
 
