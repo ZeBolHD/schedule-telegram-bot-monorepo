@@ -1,22 +1,28 @@
+import { API_URL } from "@/lib/consts";
 import { Group } from "@repo/database";
 import axios from "axios";
 
-const editGroup = async (groupId: number, notification: number, file?: File, grade?: number) => {
+const editGroup = async (
+  groupId: number,
+  notification: number,
+  file: File | null,
+  grade: number,
+  accessToken: string,
+) => {
   try {
     const formData = new FormData();
-    formData.append("groupId", String(groupId));
-    formData.append("notification", String(notification));
     formData.append("grade", String(grade));
 
     if (file) {
       formData.append("document", file, file.name);
     }
 
-    const url = "/api/groups/edit";
+    const url = API_URL + `groups/${groupId}?notification=${!!notification}`;
 
-    const { data } = await axios.post<Group>(url, formData, {
+    const { data } = await axios.patch<Group>(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 

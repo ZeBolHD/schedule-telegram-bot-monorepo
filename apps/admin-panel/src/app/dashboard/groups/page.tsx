@@ -1,36 +1,42 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
-import { ColumnFiltersState, RowSelectionState, Updater } from "@tanstack/react-table";
-import { Faculty } from "@repo/database";
+import { useState } from "react";
+import { useQuery } from "react-query";
+import { RowSelectionState, Updater } from "@tanstack/react-table";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorFetchBlock from "@/components/ErrorBlock";
-import { TableGroupsDataContext } from "@/context/TableGroupsDataContext";
-import getAllFaculties from "@/actions/getAllFaculties";
 
-import GroupCreate from "./components/GroupCreate";
 import GroupAddSchedule from "./components/GroupAddSchedule";
 import GroupFilters from "./components/GroupFilters";
 import GroupTable from "./components/Table";
+import getAllGroups from "@/actions/getAllGroups";
+import { GroupFiltersType } from "@/types";
+import { useSession } from "next-auth/react";
+import GroupCreate from "./components/GroupCreate";
 
 const GroupsPage = () => {
-  const { groups, isLoading, refetch } = useContext(TableGroupsDataContext);
+  const [groupFilters, setGroupFilters] = useState<GroupFiltersType>({});
+  const [page, setPage] = useState(1);
+
+  const session = useSession();
+
+  const { data, refetch, isLoading } = useQuery(
+    ["groups", groupFilters, page, session.data?.accessToken],
+    () => getAllGroups(groupFilters, page, session.data?.accessToken!),
+    {
+      enabled: !!session.data?.accessToken,
+      initialData: {
+        groups: [],
+        count: 0,
+        page: 0,
+        pageSize: 0,
+        pageCount: 0,
+      },
+    },
+  );
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const [faculties, setFaculties] = useState<Faculty[]>([]);
-
-  const fetchFaculties = async () => {
-    const faculties = await getAllFaculties();
-
-    if (faculties === null) {
-      return;
-    }
-
-    setFaculties(faculties);
-  };
 
   const onRowSelectionChange = (updater: Updater<RowSelectionState>) => {
     setRowSelection(updater);
@@ -43,50 +49,43 @@ const GroupsPage = () => {
   const getSelectedGroups = () => {
     const keys = Object.keys(rowSelection);
 
-    if (!groups) {
+    if (!data) {
       return [];
     }
 
-    return keys.map((key) => groups[Number(key)]);
+    return keys.map((key) => data.groups[Number(key)]);
   };
 
   const selectedGroups = getSelectedGroups();
 
   const isAnyGroupSelected = selectedGroups.length > 0;
 
-  useEffect(() => {
-    fetchFaculties();
-  }, []);
-
-  if (isLoading) {
+  if (!data || isLoading || !session.data?.accessToken) {
     return <LoadingSpinner size={100} />;
   }
 
-  if (groups === null) {
+  if (!data) {
     return <ErrorFetchBlock onRefetch={refetch} />;
   }
 
   return (
     <div className="w-full h-full p-10">
       <div className="flex items-center justify-end">
-        <GroupFilters
-          faculties={faculties}
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-        />
+        <GroupFilters setGroupFilters={setGroupFilters} />
         <GroupAddSchedule
           groups={selectedGroups}
           disabled={!isAnyGroupSelected}
           resetRowSelection={resetRowSelection}
         />
-        <GroupCreate faculties={faculties} />
+        <GroupCreate />
       </div>
       <GroupTable
-        groups={groups}
+        groups={data.groups}
         onRowSelectionChange={onRowSelectionChange}
         rowSelection={rowSelection}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
+        page={page}
+        setPage={setPage}
+        pageCount={data.pageCount}
       />
     </div>
   );

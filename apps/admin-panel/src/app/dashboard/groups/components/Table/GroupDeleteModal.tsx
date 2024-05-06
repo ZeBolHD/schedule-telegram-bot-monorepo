@@ -8,7 +8,8 @@ import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import deleteGroup from "@/actions/deleteGroup";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { TableGroupsDataContext } from "@/context/TableGroupsDataContext";
+import { useMutation, useQueryClient } from "react-query";
+import { useSession } from "next-auth/react";
 
 interface GroupDeleteModal {
   id: number;
@@ -18,16 +19,25 @@ interface GroupDeleteModal {
 
 const GroupDeleteModal = ({ id, code, onClose }: GroupDeleteModal) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { refetch } = useContext(TableGroupsDataContext);
+
+  const session = useSession();
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (id: number) => deleteGroup(id, session.data?.accessToken!),
+    onSuccess: () => {
+      queryClient.refetchQueries(["groups"]);
+    },
+  });
 
   const onGroupDelete = async () => {
     try {
       setIsLoading(true);
-      await deleteGroup(id);
+      await mutation.mutateAsync(id);
 
       onClose();
       setIsLoading(false);
-      refetch();
+      queryClient.refetchQueries(["groups"]);
       toast.success(`Группа ${code} успешно удалена`);
     } catch (e) {
       setIsLoading(false);
@@ -47,12 +57,7 @@ const GroupDeleteModal = ({ id, code, onClose }: GroupDeleteModal) => {
         <Button variant="ghost" onClick={onClose} disabled={isLoading}>
           Отмена
         </Button>
-        <Button
-          variant="destructive"
-          className="ml-5"
-          disabled={isLoading}
-          onClick={onGroupDelete}
-        >
+        <Button variant="destructive" className="ml-5" disabled={isLoading} onClick={onGroupDelete}>
           {isLoading ? <LoadingSpinner size={20} /> : "Удалить"}
         </Button>
       </CardFooter>

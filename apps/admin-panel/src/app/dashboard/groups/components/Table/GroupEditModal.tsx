@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
-import { FullGroupType } from "@/types";
+import { Group } from "@/types";
 import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,39 +12,58 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import editGroup from "@/actions/editGroup";
-import { TableGroupsDataContext } from "@/context/TableGroupsDataContext";
+import { useMutation, useQueryClient } from "react-query";
+import { useSession } from "next-auth/react";
 
 interface GroupEditModalProps {
-  group: FullGroupType;
+  group: Group;
   onClose: () => void;
 }
 
 interface GroupEditFormInput {
-  file: FileList | null;
+  file: FileList | null | undefined;
   grade: number;
   notification: number;
 }
 
 const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, control, reset } =
-    useForm<GroupEditFormInput>();
+  const { register, handleSubmit, control, reset } = useForm<GroupEditFormInput>({
+    defaultValues: {
+      file: null,
+      notification: 0,
+      grade: group.grade,
+    },
+  });
 
-  const { refetch } = useContext(TableGroupsDataContext);
+  const session = useSession();
+
+  const queryClient = useQueryClient();
+  const mutate = useMutation({
+    mutationFn: (data: { file: File | null; notification: number; grade: number }) =>
+      editGroup(
+        group.id,
+        data.notification,
+        data.file as unknown as File,
+        data.grade,
+        session.data!.accessToken,
+      ),
+  });
 
   const onSubmit: SubmitHandler<GroupEditFormInput> = async (data) => {
-    const grade = data.grade;
-    const groupId = group.id;
-    const file = data.file?.[0];
-    const notification = data.notification;
+    // if (!data.file && Number(data.grade) === group.grade) {
+    //   return;
+    // }
 
-    if (!file && Number(grade) === group.grade) {
+    if (!data.file) {
       return;
     }
 
+    console.log(data);
+
     setIsLoading(true);
 
-    const newGroup = await editGroup(groupId, notification, file, grade);
+    const newGroup = await mutate.mutateAsync({ ...data, file: data.file[0] as File });
 
     if (!newGroup) {
       setIsLoading(false);
@@ -55,7 +74,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
 
     setIsLoading(false);
     toast.success("Группа успешно обновлена");
-    refetch();
+    queryClient.refetchQueries(["groups"]);
     onClose();
   };
 
@@ -80,7 +99,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
             defaultValue={group.grade}
             max={6}
             min={1}
-            {...register("grade")}
+            {...register("grade", { valueAsNumber: true })}
             className="mt-2"
           />
         </div>
@@ -95,10 +114,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
             accept=".pdf"
             {...register("file")}
           />
-          <p
-            className="mt-1 text-sm text-gray-500 dark:text-gray-300"
-            id="file_input_help"
-          >
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
             PDF (MAX. 20MB).
           </p>
         </div>
@@ -116,10 +132,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
                   value={1}
                   onCheckedChange={(checked) => field.onChange(checked ? 1 : 0)}
                 />
-                <Label
-                  htmlFor="notification"
-                  className="text-md font-normal ml-2.5 cursor-pointer"
-                >
+                <Label htmlFor="notification" className="text-md font-normal ml-2.5 cursor-pointer">
                   Отправить уведомление
                 </Label>
               </>
@@ -128,12 +141,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onClose}
-          className="mr-5"
-        >
+        <Button type="button" variant="ghost" onClick={onClose} className="mr-5">
           Отмена
         </Button>
         <Button

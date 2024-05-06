@@ -1,7 +1,8 @@
 "use client";
 
-import { Faculty } from "@repo/database";
+import { useQuery } from "react-query";
 import { ColumnFiltersState, Updater } from "@tanstack/react-table";
+import { Faculty } from "@repo/database";
 
 import {
   Select,
@@ -12,39 +13,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import getAllFaculties from "@/actions/getAllFaculties";
+import { GroupFiltersType } from "@/types";
+import { Dispatch } from "react";
+import { useSession } from "next-auth/react";
 
 interface GroupFiltersProps {
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (updater: Updater<ColumnFiltersState>) => void;
-  faculties: Faculty[];
+  setGroupFilters: Dispatch<Updater<GroupFiltersType>>;
 }
 
-const GroupFilters = ({ faculties, setColumnFilters }: GroupFiltersProps) => {
-  const changeFacultyFilter = (facultyId: string) => {
-    setColumnFilters((prev) => {
-      if (prev.find((filter) => filter.id === "faculty")) {
-        return [
-          ...prev.filter((filter) => filter.id !== "faculty"),
-          { id: "faculty", value: facultyId },
-        ];
-      }
+const GroupFilters = ({ setGroupFilters }: GroupFiltersProps) => {
+  const session = useSession();
 
-      return [...prev, { id: "faculty", value: facultyId }];
-    });
+  const { data: faculties, isLoading } = useQuery(
+    "faculties",
+    () => getAllFaculties(session.data?.accessToken!),
+    {
+      enabled: !!session.data?.accessToken,
+    },
+  );
+
+  const changeFacultyFilter = (facultyId: string) => {
+    setGroupFilters((prev) => ({
+      ...prev,
+      facultyId: facultyId === "None" ? undefined : Number(facultyId),
+    }));
   };
 
   const changeStudyTypeFilter = (studyType: string) => {
-    setColumnFilters((prev) => {
-      if (prev.find((filter) => filter.id === "studyType")) {
-        return [
-          ...prev.filter((filter) => filter.id !== "studyType"),
-          { id: "studyType", value: studyType },
-        ];
-      }
-
-      return [...prev, { id: "studyType", value: studyType }];
-    });
+    setGroupFilters((prev) => ({
+      ...prev,
+      studyType: studyType === "None" ? undefined : Number(studyType),
+    }));
   };
+
+  const changeGradeFilter = (grade: string) => {
+    setGroupFilters((prev) => ({ ...prev, grade: grade === "None" ? undefined : Number(grade) }));
+  };
+
+  if (!faculties || isLoading) {
+    return null;
+  }
 
   return (
     <div className=" text-black ml-0 mr-auto flex text-center">
@@ -84,6 +93,33 @@ const GroupFilters = ({ faculties, setColumnFilters }: GroupFiltersProps) => {
               </SelectItem>
               <SelectItem value="1" className="cursor-pointer">
                 Заочная
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="w-60 ml-5">
+        <Select onValueChange={changeGradeFilter}>
+          <SelectTrigger>
+            <SelectValue placeholder="Курс" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Курс</SelectLabel>
+              <SelectItem value="None" className="cursor-pointer">
+                Любой
+              </SelectItem>
+              <SelectItem value="1" className="cursor-pointer">
+                1
+              </SelectItem>
+              <SelectItem value="2" className="cursor-pointer">
+                2
+              </SelectItem>
+              <SelectItem value="3" className="cursor-pointer">
+                3
+              </SelectItem>
+              <SelectItem value="4" className="cursor-pointer">
+                4
               </SelectItem>
             </SelectGroup>
           </SelectContent>

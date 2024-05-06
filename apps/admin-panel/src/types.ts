@@ -1,10 +1,16 @@
-import { Faculty, Group, TelegramUser } from "@repo/database";
+import { Faculty, Group as PrismaGroup, TelegramUser } from "@repo/database";
 
-export type FullGroupType = Group & {
-  _count: {
-    userWithGroup: number;
-  };
-  faculty: Faculty;
+export type Group = PrismaGroup & {
+  userCount: number;
+  facultyName: string;
+};
+
+export type GroupApiResponse = {
+  groups: Group[];
+  count: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
 };
 
 export type FullTelegramUserType = TelegramUser & {
@@ -34,4 +40,10 @@ export type Media = {
   media: string;
   caption?: string;
   parse_mode?: string;
+};
+
+export type GroupFiltersType = {
+  facultyId?: string | number;
+  studyType?: string | number;
+  grade?: string | number;
 };

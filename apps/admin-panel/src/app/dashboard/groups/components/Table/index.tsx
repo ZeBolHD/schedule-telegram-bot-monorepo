@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, useState } from "react";
 import {
-  ColumnFiltersState,
   PaginationState,
   RowSelectionState,
   Updater,
@@ -14,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { FullGroupType } from "@/types";
+import { Group } from "@/types";
 
 import {
   Table,
@@ -30,19 +29,21 @@ import { Button } from "@/components/ui/button";
 import columns from "./columns";
 
 interface TableProps {
-  groups: FullGroupType[];
+  groups: Group[];
   onRowSelectionChange: (updater: Updater<RowSelectionState>) => void;
   rowSelection: RowSelectionState;
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (updater: Updater<ColumnFiltersState>) => void;
+  page: number;
+  pageCount: number;
+  setPage: Dispatch<Updater<number>>;
 }
 
 const GroupTable = ({
   groups,
   onRowSelectionChange,
   rowSelection,
-  columnFilters,
-  setColumnFilters,
+  page,
+  setPage,
+  pageCount,
 }: TableProps) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -52,7 +53,6 @@ const GroupTable = ({
   const table = useReactTable({
     data: groups,
     columns,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -60,7 +60,6 @@ const GroupTable = ({
     onRowSelectionChange: onRowSelectionChange,
     onPaginationChange: setPagination,
     state: {
-      columnFilters,
       rowSelection,
       pagination,
     },
@@ -75,16 +74,10 @@ const GroupTable = ({
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-white bg-transparent"
-                    >
+                    <TableHead key={header.id} className="text-white bg-transparent">
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -96,26 +89,18 @@ const GroupTable = ({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className={
-                    row.getIsSelected() ? "bg-zinc-700" : "hover:bg-zinc-900"
-                  }
+                  className={row.getIsSelected() ? "bg-zinc-700" : "hover:bg-zinc-900"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -133,16 +118,16 @@ const GroupTable = ({
           <Button
             variant="outline"
             className="text-black"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => setPage((prev) => prev - 1)}
+            disabled={page === 1}
           >
             Назад
           </Button>
           <Button
             variant="outline"
             className="text-black"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={page === pageCount}
           >
             Вперед
           </Button>

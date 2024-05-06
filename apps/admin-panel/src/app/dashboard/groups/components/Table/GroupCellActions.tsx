@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 
-import { FullGroupType } from "@/types";
+import { Group } from "@/types";
 import useModal from "@/hooks/useModal";
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import GroupDeleteModal from "./GroupDeleteModal";
 import GroupEditModal from "./GroupEditModal";
 
 interface GroupCellActionsProps {
-  row: Row<FullGroupType>;
+  row: Row<Group>;
 }
 
 const GroupCellActions = ({ row }: GroupCellActionsProps) => {
@@ -54,11 +54,7 @@ const GroupCellActions = ({ row }: GroupCellActionsProps) => {
         {modalAction === "edit" ? (
           <GroupEditModal group={group} onClose={toggleModal} />
         ) : (
-          <GroupDeleteModal
-            id={group.id}
-            code={group.code}
-            onClose={toggleModal}
-          />
+          <GroupDeleteModal id={group.id} code={group.code} onClose={toggleModal} />
         )}
       </Modal>
     </>

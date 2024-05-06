@@ -19,13 +19,11 @@ const getRefreshToken = async (token: JWT): Promise<JWT | null> => {
 
   const response = await res.json();
 
-  console.log("refreshed token");
+  console.log("refreshed token", response);
 
   return {
     ...token,
-    refreshToken: response.refreshToken,
-    accessToken: response.accessToken,
-    expiresIn: response.expiresIn,
+    ...response,
   };
 };
 
@@ -57,8 +55,6 @@ export const authOptions: AuthOptions = {
           }),
         });
 
-        console.log(res);
-
         if (!res.ok) {
           return;
         }
@@ -87,7 +83,9 @@ export const authOptions: AuthOptions = {
         return token;
       }
 
-      return (await getRefreshToken(token)) as JWT;
+      const refreshToken = await getRefreshToken(token);
+
+      return refreshToken ?? token;
     },
 
     async session({ session, token }) {

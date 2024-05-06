@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { FullGroupType } from "@/types";
+import { Group } from "@/types";
 
 import useModal from "@/hooks/useModal";
 import Modal from "@/components/Modal";
@@ -15,11 +15,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import addScheduleToGroups from "@/actions/addScheduleToGroups";
-import { TableGroupsDataContext } from "@/context/TableGroupsDataContext";
+import { useMutation, useQueryClient } from "react-query";
+import { useSession } from "next-auth/react";
 
 interface GroupAddScheduleProps {
   disabled?: boolean;
-  groups: FullGroupType[];
+  groups: Group[];
   resetRowSelection: () => void;
 }
 
@@ -28,22 +29,28 @@ interface GroupAddScheduleForm {
   notification: number;
 }
 
-const GroupAddSchedule = ({
-  groups,
-  disabled,
-  resetRowSelection,
-}: GroupAddScheduleProps) => {
+const GroupAddSchedule = ({ groups, disabled, resetRowSelection }: GroupAddScheduleProps) => {
+  const session = useSession();
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (data: GroupAddScheduleForm) =>
+      addScheduleToGroups(
+        groups.map((group) => group.id),
+        data.file[0],
+        data.notification,
+        session.data!.accessToken,
+      ),
+  });
+
   const { isModalOpen, toggleModal } = useModal();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { refetch } = useContext(TableGroupsDataContext);
-
-  const { register, handleSubmit, reset, control } =
-    useForm<GroupAddScheduleForm>();
+  const { register, handleSubmit, reset, control } = useForm<GroupAddScheduleForm>();
 
   const onSuccess = () => {
     resetRowSelection();
-    refetch();
+    queryClient.refetchQueries(["groups"]);
     reset();
     toggleModal();
     toast.success("Schedule added successfully");
@@ -53,15 +60,13 @@ const GroupAddSchedule = ({
   const onSubmit: SubmitHandler<GroupAddScheduleForm> = async (data) => {
     setIsLoading(true);
 
-    const file = data.file?.[0];
-    const notification = data.notification;
-    const groupIds = groups.map((group) => group.id);
-
-    if (!file) {
+    if (!data.file[0]) {
       return;
     }
 
-    const status = await addScheduleToGroups(groupIds, file, notification);
+    const status = await mutation.mutateAsync(data);
+
+    console.log(status);
 
     if (!status) {
       toast.error("Something went wrong");
@@ -111,10 +116,7 @@ const GroupAddSchedule = ({
                 accept=".pdf"
                 {...register("file")}
               />
-              <p
-                className="mt-1 text-sm text-gray-500 dark:text-gray-300"
-                id="file_input_help"
-              >
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
                 PDF (MAX. 20MB).
               </p>
             </div>
@@ -130,9 +132,7 @@ const GroupAddSchedule = ({
                       {...field}
                       checked={field.value === 1}
                       value={1}
-                      onCheckedChange={(checked) =>
-                        field.onChange(checked ? 1 : 0)
-                      }
+                      onCheckedChange={(checked) => field.onChange(checked ? 1 : 0)}
                     />
                     <Label
                       htmlFor="notification"
@@ -146,19 +146,10 @@ const GroupAddSchedule = ({
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button
-              type="button"
-              variant="ghost"
-              className="mr-5"
-              onClick={toggleModal}
-            >
+            <Button type="button" variant="ghost" className="mr-5" onClick={toggleModal}>
               Отмена
             </Button>
-            <Button
-              type="submit"
-              className="bg-blue-500 hover:to-blue-600"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="bg-blue-500 hover:to-blue-600" disabled={isLoading}>
               {isLoading ? <LoadingSpinner size={20} /> : "Добавить"}
             </Button>
           </CardFooter>

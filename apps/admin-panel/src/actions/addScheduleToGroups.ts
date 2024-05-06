@@ -1,21 +1,23 @@
+import { API_URL } from "@/lib/consts";
 import axios from "axios";
 
 const addScheduleToGroups = async (
   groupIds: number[],
   file: File,
-  notification: number
+  notification: number,
+  accessToken: string,
 ) => {
   const formData = new FormData();
   formData.append("groupIds", JSON.stringify(groupIds));
-  formData.append("notification", String(notification));
   formData.append("document", file);
 
-  const url = "/api/schedule";
+  const url = API_URL + `groups/schedule?notification=${!!notification}`;
 
   try {
     const { status } = await axios.post(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 

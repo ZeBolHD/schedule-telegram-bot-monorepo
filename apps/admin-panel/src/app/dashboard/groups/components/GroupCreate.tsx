@@ -1,9 +1,9 @@
 "use client";
 
-import { useContext } from "react";
-import { Faculty } from "@repo/database";
 import { toast } from "react-hot-toast";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import Modal from "@/components/Modal";
 
@@ -20,15 +20,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { GroupCreateType } from "@/types";
 import createGroup from "@/actions/createGroup";
-import { TableGroupsDataContext } from "@/context/TableGroupsDataContext";
 import useModal from "@/hooks/useModal";
+import getAllFaculties from "@/actions/getAllFaculties";
 
-interface GroupCreateProps {
-  faculties: Faculty[];
-}
+const GroupCreate = () => {
+  const queryClient = useQueryClient();
 
-const GroupCreate = ({ faculties }: GroupCreateProps) => {
-  const { refetch } = useContext(TableGroupsDataContext);
+  const session = useSession();
+
+  const { data: faculties } = useQuery(
+    "faculties",
+    () => getAllFaculties(session.data?.accessToken!),
+    {
+      enabled: !!session.data?.accessToken,
+    },
+  );
 
   const { isModalOpen, toggleModal } = useModal();
 
@@ -39,12 +45,18 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
     reset();
   };
 
+  const mutation = useMutation({
+    mutationFn: (data: GroupCreateType) => createGroup(data, session.data?.accessToken!),
+    onSuccess: () => {
+      queryClient.refetchQueries(["groups"]);
+    },
+  });
+
   const onSubmit: SubmitHandler<GroupCreateType> = async (data) => {
-    const status = await createGroup(data);
-    if (status === 200) {
+    const status = await mutation.mutateAsync(data);
+    if (status === 201) {
       toggleModal();
       reset();
-      refetch();
       toast.success("Группа успешно создана");
       return;
     }
@@ -93,7 +105,11 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
                 rules={{ required: true }}
                 render={({ field }) => {
                   return (
-                    <Select onValueChange={field.onChange} defaultValue={field.value} required>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value}
+                      required
+                    >
                       <SelectTrigger className="mt-2">
                         <SelectValue placeholder="Выберите факультет" id="facultyId" />
                       </SelectTrigger>
@@ -120,7 +136,11 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
                 rules={{ required: true }}
                 render={({ field }) => {
                   return (
-                    <Select onValueChange={field.onChange} defaultValue={field.value} required>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value}
+                      required
+                    >
                       <SelectTrigger className="mt-2">
                         <SelectValue placeholder="Выберите форму обучения" />
                       </SelectTrigger>
@@ -138,7 +158,7 @@ const GroupCreate = ({ faculties }: GroupCreateProps) => {
                 Курс
               </Label>
               <Input
-                {...register("grade", { required: true })}
+                {...register("grade", { required: true, valueAsNumber: true })}
                 type="number"
                 placeholder="4"
                 max={6}

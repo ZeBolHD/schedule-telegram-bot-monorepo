@@ -3,14 +3,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Faculty } from "@repo/database";
 
-import { FullGroupType } from "@/types";
+import { Group } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
 import GroupCellActions from "./GroupCellActions";
+import { API_URL } from "@/lib/consts";
 
-const columns: ColumnDef<FullGroupType>[] = [
+const columns: ColumnDef<Group>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -48,11 +49,11 @@ const columns: ColumnDef<FullGroupType>[] = [
     cell: ({ row }) => <div className="text-center">{row.getValue("code")}</div>,
   },
   {
-    id: "faculty",
+    id: "facultyName",
     accessorKey: "faculty",
     header: () => <div className="w-full text-center">Факультет</div>,
     cell: ({ row }) => {
-      const facultyName = (row.getValue("faculty") as Faculty).name;
+      const facultyName = row.original.facultyName as string;
 
       return <div className="text-right">{facultyName}</div>;
     },
@@ -89,23 +90,23 @@ const columns: ColumnDef<FullGroupType>[] = [
     cell: ({ row }) => <div className="text-center">{row.getValue("grade")}</div>,
   },
   {
-    accessorKey: "_count",
+    accessorKey: "userCount",
     header: ({ column }) => <TableHeaderSortButton column={column} name="Пользователи" />,
     cell: ({ row }) => {
-      return <div className="text-center">{(row.getValue("_count") as any).userWithGroup}</div>;
+      return <div className="text-center">{(row.original.userCount || 0).toString()}</div>;
     },
   },
   {
     accessorKey: "fileId",
     header: () => <div className="text-center">Файл</div>,
     cell: ({ row }) => {
-      const fileId: Pick<FullGroupType, "fileId"> = row.getValue("fileId");
+      const fileId = row.original.fileId;
 
       return (
         <div className="text-right">
           {fileId ? (
             <Button className="w-full bg-white text-black hover:bg-gray-300">
-              <Link href={`/api/download?file_id=${fileId}`} target="_blank">
+              <Link href={API_URL + `files/${fileId}`} target="_blank">
                 Скачать
               </Link>
             </Button>
