@@ -3,8 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { createReadStream } from "fs";
 
 import { Telegraf } from "telegraf";
 import { InputFile, InputMediaPhoto } from "telegraf/typings/core/types/typegram";
@@ -34,6 +36,16 @@ export class BotService {
       this.logger.error("Failed to send message to telegram user");
       throw new InternalServerErrorException("Failed to send message to telegram user");
     });
+  }
+
+  async getDocumentURLByFileId(fileId: string) {
+    const { href } = await this.bot.telegram.getFileLink(fileId);
+
+    if (!href) {
+      throw new NotFoundException("Document not found");
+    }
+
+    return href;
   }
 
   async sendPhoto(chatId: string, image: InputFile) {

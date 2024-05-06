@@ -51,6 +51,18 @@ export class GroupsService {
       },
     });
 
+    const count = await this.prismaService.group
+      .aggregate({
+        _count: true,
+        where: {
+          studyType: query.studyType,
+          facultyId: query.facultyId,
+          grade: query.grade,
+        },
+      })
+      .then((res) => res._count)
+      .catch(() => 0);
+
     const groups = groupsExists.map((group) => ({
       id: group.id,
       code: group.code,
@@ -59,9 +71,9 @@ export class GroupsService {
       facultyId: group.facultyId,
       facultyName: group.faculty.name,
       userCount: group.userWithGroup.length,
+      fileId: group.fileId,
     }));
 
-    const count = groupsExists.length;
     const pageCount = Math.ceil(count / query.pageSize);
 
     this.logger.log(`Found ${count} groups`);
@@ -172,7 +184,7 @@ export class GroupsService {
 
     if (!group) {
       this.logger.error(`Group with id ${id} not found`);
-      throw new BadRequestException(`Group with id ${id} not found`);
+      throw new NotFoundException(`Group with id ${id} not found`);
     }
 
     const deletedGroup = await this.prismaService.group

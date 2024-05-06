@@ -19,7 +19,7 @@ export class FindAllQueryDto {
   @IsNumber({}, { message: "Поле studyType должно быть числом" })
   @Min(0, { message: "Поле studyType должно быть 0 или 1" })
   @Max(1, { message: "Поле studyType должно быть 0 или 1" })
-  studyType: number = 0;
+  studyType: number;
 
   @IsOptional()
   @Transform(({ value }) => Number(value))

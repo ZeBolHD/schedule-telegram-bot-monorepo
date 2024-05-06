@@ -9,6 +9,7 @@ import { FacultiesModule } from "./faculties/faculties.module";
 import { GroupsModule } from "./groups/groups.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { BotModule } from "./bot/bot.module";
+import { FilesModule } from "./files/files.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BotModule } from "./bot/bot.module";
     GroupsModule,
     NotificationsModule,
     BotModule,
+    FilesModule,
   ],
   providers: [
     {

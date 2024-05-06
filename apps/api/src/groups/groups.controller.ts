@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -38,8 +39,8 @@ export class GroupsController {
 
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  @Get(":id")
-  async deleteGroup(@Query("id") id: number) {
+  @Delete(":id")
+  async deleteGroup(@Param("id") id: number) {
     return await this.groupsService.delete(id);
   }
 
