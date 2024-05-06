@@ -13,6 +13,10 @@ export class ScheduleController {
   async getSchedule(@Ctx() context: Context, @Sender("id") senderId: number) {
     const scheduleFilesWithGroups = await this.scheduleService.getScheduleFiles(senderId);
 
+    if (context.callbackQuery) {
+      await context.deleteMessage(context.callbackQuery.message.message_id);
+    }
+
     if (scheduleFilesWithGroups.length === 0) {
       await context.reply(locales.get_schedule.get_error);
     }

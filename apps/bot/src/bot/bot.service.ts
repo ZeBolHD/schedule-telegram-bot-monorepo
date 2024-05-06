@@ -8,7 +8,15 @@ export class BotService {
   constructor(
     private readonly config: ConfigService,
     @InjectBot("ScheduleBot") private readonly bot: Telegraf,
-  ) {}
+  ) {
+    bot.telegram.setMyCommands([
+      { command: "start", description: "Старт" },
+      { command: "my_subscriptions", description: "Мои подписки" },
+      { command: "select_group", description: "Выбрать группу" },
+      { command: "my_groups", description: "Мои группы" },
+      { command: "my_subscriptions", description: "Мои подписки" },
+    ]);
+  }
 
   sendMessage = this.bot.telegram.sendMessage.bind(
     this.bot.telegram,
