@@ -26,12 +26,12 @@ export type GroupCreateType = {
 
 export interface Announcement {
   heading: string;
-  content: string;
+  text: string;
 }
 
 export interface News {
   heading: string;
-  content: string;
+  text: string;
   images: FileList;
 }
 

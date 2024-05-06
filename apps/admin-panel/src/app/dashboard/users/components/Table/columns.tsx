@@ -1,11 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 
-import { FullTelegramUserType } from "@/types";
-import { Button } from "@/components/ui/button";
+import { TelegramUser } from "@/types";
 import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
-const columns: ColumnDef<FullTelegramUserType>[] = [
+const columns: ColumnDef<TelegramUser>[] = [
   {
     accessorKey: "id",
     header: "Id",

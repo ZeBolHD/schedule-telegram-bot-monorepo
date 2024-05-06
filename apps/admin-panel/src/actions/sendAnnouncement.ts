@@ -1,15 +1,17 @@
 import axios from "axios";
 
 import { Announcement } from "@/types";
+import { API_URL } from "@/lib/consts";
 
-const sendAnnouncement = async ({ heading, content }: Announcement) => {
+const sendAnnouncement = async (announcement: Announcement, accessToken: string) => {
   try {
-    const { data } = await axios.post("/api/notifications/announcement", {
-      heading,
-      content,
+    const { status } = await axios.post(API_URL + "notifications/announcement", announcement, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
 
-    return data;
+    return status;
   } catch (e) {
     return null;
   }

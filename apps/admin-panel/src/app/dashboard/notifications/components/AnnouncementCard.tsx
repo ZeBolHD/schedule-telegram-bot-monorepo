@@ -12,9 +12,12 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import sendAnnouncement from "@/actions/sendAnnouncement";
 
 import { Announcement } from "@/types";
+import { useSession } from "next-auth/react";
 
 const AnnouncementCard = () => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const session = useSession();
 
   const {
     handleSubmit,
@@ -26,11 +29,11 @@ const AnnouncementCard = () => {
   const onSubmit: SubmitHandler<Announcement> = async (data) => {
     setIsLoading(true);
 
-    const res = await sendAnnouncement(data);
+    const status = await sendAnnouncement(data, session.data?.accessToken!);
 
     setIsLoading(false);
 
-    if (res) {
+    if (status === 201) {
       toast.success("Объявление успешно отправлено");
       reset();
       return;
@@ -59,9 +62,7 @@ const AnnouncementCard = () => {
               placeholder="Заголовок"
             />
             {errors.heading && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.heading.message}
-              </p>
+              <p className="text-red-500 mt-1 text-sm">{errors.heading.message}</p>
             )}
           </div>
           <div className="mt-5">
@@ -70,17 +71,13 @@ const AnnouncementCard = () => {
             </Label>
             <Textarea
               id="content"
-              {...register("content", {
+              {...register("text", {
                 required: "Это поле обязательно для заполнения",
               })}
               className="w-full mt-2"
               placeholder="Текст"
             />
-            {errors.content && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.content.message}
-              </p>
-            )}
+            {errors.text && <p className="text-red-500 mt-1 text-sm">{errors.text.message}</p>}
             <p className="text-sm text-zinc-500 mt-2">
               Поддерживается текстовая разметка по{" "}
               <a

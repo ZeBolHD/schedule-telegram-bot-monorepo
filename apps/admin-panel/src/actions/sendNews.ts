@@ -1,25 +1,29 @@
 import axios from "axios";
 
 import { News } from "@/types";
+import { API_URL } from "@/lib/consts";
 
-export const sendNews = async ({ heading, content, images }: News) => {
+export const sendNews = async (news: News, accessToken: string) => {
   const formData = new FormData();
 
-  formData.append("heading", heading);
-  formData.append("content", content);
+  formData.append("heading", news.heading);
+  formData.append("text", news.text);
 
-  for (let image of images) {
-    formData.append("image", image);
+  for (let image of news.images) {
+    formData.append("images", image);
   }
 
+  const url = API_URL + "notifications/news";
+
   try {
-    const { data } = await axios.post("/api/notifications/news", formData, {
+    const { status } = await axios.post(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    return data;
+    return status;
   } catch (e) {
     return null;
   }

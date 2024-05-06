@@ -38,7 +38,7 @@ const columns: ColumnDef<Group>[] = [
   },
   {
     accessorKey: "id",
-    header: ({ column }) => <TableHeaderSortButton column={column} name="Id" />,
+    header: ({ column }) => <div className="w-full text-center">{column.id}</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
     size: 30,
     maxSize: 30,
