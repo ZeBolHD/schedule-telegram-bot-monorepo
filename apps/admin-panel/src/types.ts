@@ -1,4 +1,4 @@
-import { Faculty, Group as PrismaGroup, TelegramUser } from "@repo/database";
+import { Faculty, Group as PrismaGroup, TelegramUser as PrismaTelegramUser } from "@repo/database";
 
 export type Group = PrismaGroup & {
   userCount: number;
@@ -13,7 +13,7 @@ export type GroupApiResponse = {
   pageCount: number;
 };
 
-export type FullTelegramUserType = TelegramUser & {
+export type TelegramUser = PrismaTelegramUser & {
   groups: string[];
 };
 

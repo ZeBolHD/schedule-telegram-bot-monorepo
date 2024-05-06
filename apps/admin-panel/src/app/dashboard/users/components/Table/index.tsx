@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, useState } from "react";
 
 import {
   flexRender,
@@ -20,17 +20,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FullTelegramUserType } from "@/types";
+import { TelegramUser } from "@/types";
 
 import columns from "./columns";
 
 interface UsersTableProps {
-  users: FullTelegramUserType[];
+  users: TelegramUser[];
 }
 
 const UserTable = ({ users }: UsersTableProps) => {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
-
   const table = useReactTable({
     data: users,
     columns,
@@ -38,10 +36,6 @@ const UserTable = ({ users }: UsersTableProps) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onPaginationChange: setPagination,
-    state: {
-      pagination,
-    },
   });
 
   const userCount = users.length;
@@ -55,16 +49,10 @@ const UserTable = ({ users }: UsersTableProps) => {
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-white bg-transparent text-center"
-                    >
+                    <TableHead key={header.id} className="text-white bg-transparent text-center">
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -76,26 +64,18 @@ const UserTable = ({ users }: UsersTableProps) => {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className={
-                    row.getIsSelected() ? "bg-zinc-700" : "hover:bg-zinc-900"
-                  }
+                  className={row.getIsSelected() ? "bg-zinc-700" : "hover:bg-zinc-900"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="text-center">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   Нет данных.
                 </TableCell>
               </TableRow>
@@ -110,7 +90,7 @@ const UserTable = ({ users }: UsersTableProps) => {
             variant="outline"
             className="text-black"
             size="sm"
-            onClick={() => table.previousPage()}
+            onClick={table.previousPage}
             disabled={!table.getCanPreviousPage()}
           >
             Назад
@@ -119,7 +99,7 @@ const UserTable = ({ users }: UsersTableProps) => {
             variant="outline"
             className="text-black"
             size="sm"
-            onClick={() => table.nextPage()}
+            onClick={table.nextPage}
             disabled={!table.getCanNextPage()}
           >
             Вперед
