@@ -58,6 +58,21 @@ model Faculty {
   @@map("faculties")
 }
 
+model Department {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("departments")
+}
+
+model Teachers {
+  id      Int    @id @default(autoincrement())
+  name    String
+  contact String
+
+  @@map("teachers")
+}
+
 model AdminUser {
   id        String   @id @unique @default(uuid())
   name      String   @unique
