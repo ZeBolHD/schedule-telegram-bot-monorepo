@@ -11,6 +11,8 @@ import { NotificationsModule } from "./notifications/notifications.module";
 import { BotModule } from "./bot/bot.module";
 import { FilesModule } from "./files/files.module";
 import { DepartmentsModule } from "./departments/departments.module";
+import { TeachersModule } from "./teachers/teachers.module";
+import { DocumentsModule } from "./documents/documents.module";
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { DepartmentsModule } from "./departments/departments.module";
     BotModule,
     FilesModule,
     DepartmentsModule,
+    TeachersModule,
+    DocumentsModule,
   ],
   providers: [
     {
