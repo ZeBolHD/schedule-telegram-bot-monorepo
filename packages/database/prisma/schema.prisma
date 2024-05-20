@@ -65,7 +65,7 @@ model Department {
   @@map("departments")
 }
 
-model Teachers {
+model Teacher {
   id      Int    @id @default(autoincrement())
   name    String
   contact String
