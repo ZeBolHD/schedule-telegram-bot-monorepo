@@ -17,6 +17,18 @@ services:
     ports:
       - 8082:8080
 
+  bot:
+    container_name: bot
+    build:
+      context: .
+      dockerfile: ./apps/bot/Dockerfile
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/schedule_bot
+    env_file: .env
+    depends_on:
+      - postgres
+
 volumes:
   bot_db:
     external: true
