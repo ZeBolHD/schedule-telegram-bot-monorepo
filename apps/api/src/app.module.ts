@@ -10,6 +10,7 @@ import { GroupsModule } from "./groups/groups.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { BotModule } from "./bot/bot.module";
 import { FilesModule } from "./files/files.module";
+import { DepartmentsModule } from "./departments/departments.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FilesModule } from "./files/files.module";
     NotificationsModule,
     BotModule,
     FilesModule,
+    DepartmentsModule,
   ],
   providers: [
     {
