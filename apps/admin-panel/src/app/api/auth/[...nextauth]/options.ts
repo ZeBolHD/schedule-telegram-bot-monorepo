@@ -23,7 +23,9 @@ const getRefreshToken = async (token: JWT): Promise<JWT | null> => {
 
   return {
     ...token,
-    ...response,
+    accessToken: response.accessToken,
+    refreshToken: response.refreshToken,
+    expiresIn: response.expiresIn,
   };
 };
 
