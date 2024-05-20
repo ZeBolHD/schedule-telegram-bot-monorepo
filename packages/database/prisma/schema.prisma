@@ -59,16 +59,21 @@ model Faculty {
 }
 
 model Department {
-  id   Int    @id @default(autoincrement())
-  name String
+  id      Int       @id @default(autoincrement())
+  name    String
+  Teacher Teacher[]
 
   @@map("departments")
 }
 
 model Teacher {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
-  contact String
+  place   String
+  contact String?
+
+  departmentId Int        @map("department_id")
+  department   Department @relation(fields: [departmentId], references: [id])
 
   @@map("teachers")
 }
@@ -83,6 +88,26 @@ model AdminUser {
   Token Token[]
 
   @@map("admin_users")
+}
+
+model DocumentCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  documents Document[]
+
+  @@map("document_categories")
+}
+
+model Document {
+  id     Int    @id @default(autoincrement())
+  name   String
+  fileId String @map("file_id")
+
+  categoryId Int
+  category   DocumentCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
 }
 
 model Token {
