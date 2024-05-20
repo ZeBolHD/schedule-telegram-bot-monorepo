@@ -67,10 +67,11 @@ model Department {
 }
 
 model Teacher {
-  id      Int     @id @default(autoincrement())
-  name    String
-  place   String
-  contact String?
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  place     String
+  contact   String?
+  createdAt DateTime @default(now()) @map("created_at")
 
   departmentId Int        @map("department_id")
   department   Department @relation(fields: [departmentId], references: [id])
@@ -100,9 +101,9 @@ model DocumentCategory {
 }
 
 model Document {
-  id     Int    @id @default(autoincrement())
-  name   String
-  fileId String @map("file_id")
+  id     Int     @id @default(autoincrement())
+  name   String?
+  fileId String  @map("file_id")
 
   categoryId Int
   category   DocumentCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
