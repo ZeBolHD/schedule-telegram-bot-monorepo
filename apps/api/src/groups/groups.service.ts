@@ -24,8 +24,6 @@ export class GroupsService {
   async findAll(query: FindAllQueryDto) {
     this.logger.log(`Finding all groups`);
 
-    console.log(query);
-
     const groupsExists = await this.prismaService.group.findMany({
       skip: query.page * query.pageSize - query.pageSize,
       take: query.pageSize,
