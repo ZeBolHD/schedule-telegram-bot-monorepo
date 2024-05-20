@@ -15,6 +15,7 @@ export class BotService {
       { command: "select_group", description: "Выбрать группу" },
       { command: "my_groups", description: "Мои группы" },
       { command: "my_subscriptions", description: "Мои подписки" },
+      { command: "help", description: "Помощь" },
     ]);
   }
 
