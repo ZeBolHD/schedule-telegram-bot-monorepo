@@ -153,8 +153,8 @@ export class TeachersService {
       },
     });
 
-    if (teachersExists) {
-      throw new ConflictException("Teacher already exists");
+    if (!teachersExists) {
+      throw new NotFoundException("Teacher not found");
     }
 
     const editedTeacher = await this.prismaService.teacher
