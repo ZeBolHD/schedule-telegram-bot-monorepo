@@ -2,13 +2,13 @@
 
 import axios from "axios";
 
-import { FullTelegramUserType } from "@/types";
 import { API_URL } from "@/lib/consts";
+import { TelegramUser } from "@/types";
 
 const getAllTelegramUsers = async (accessToken: string) => {
   console.log("get all telegram users");
   try {
-    const { data } = await axios.get<FullTelegramUserType[]>(API_URL + "users/telegram", {
+    const { data } = await axios.get<TelegramUser[]>(API_URL + "users/telegram", {
       headers: {
         authorization: `Bearer ${accessToken}`,
       },

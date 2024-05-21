@@ -14,15 +14,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import getAllFaculties from "@/actions/getAllFaculties";
-import { GroupFiltersType } from "@/types";
+import { GetAllGroupsQuery, GroupFiltersType } from "@/types";
 import { Dispatch } from "react";
 import { useSession } from "next-auth/react";
 
 interface GroupFiltersProps {
-  setGroupFilters: Dispatch<Updater<GroupFiltersType>>;
+  setGroupsQuery: Dispatch<Updater<GetAllGroupsQuery>>;
 }
 
-const GroupFilters = ({ setGroupFilters }: GroupFiltersProps) => {
+const GroupFilters = ({ setGroupsQuery }: GroupFiltersProps) => {
   const session = useSession();
 
   const { data: faculties, isLoading } = useQuery(
@@ -34,21 +34,21 @@ const GroupFilters = ({ setGroupFilters }: GroupFiltersProps) => {
   );
 
   const changeFacultyFilter = (facultyId: string) => {
-    setGroupFilters((prev) => ({
+    setGroupsQuery((prev) => ({
       ...prev,
       facultyId: facultyId === "None" ? undefined : Number(facultyId),
     }));
   };
 
   const changeStudyTypeFilter = (studyType: string) => {
-    setGroupFilters((prev) => ({
+    setGroupsQuery((prev) => ({
       ...prev,
       studyType: studyType === "None" ? undefined : Number(studyType),
     }));
   };
 
   const changeGradeFilter = (grade: string) => {
-    setGroupFilters((prev) => ({ ...prev, grade: grade === "None" ? undefined : Number(grade) }));
+    setGroupsQuery((prev) => ({ ...prev, grade: grade === "None" ? undefined : Number(grade) }));
   };
 
   if (!faculties || isLoading) {

@@ -11,19 +11,21 @@ import GroupAddSchedule from "./components/GroupAddSchedule";
 import GroupFilters from "./components/GroupFilters";
 import GroupTable from "./components/Table";
 import getAllGroups from "@/actions/getAllGroups";
-import { GroupFiltersType } from "@/types";
+import { GetAllGroupsQuery, GroupFiltersType } from "@/types";
 import { useSession } from "next-auth/react";
 import GroupCreate from "./components/GroupCreate";
 
 const GroupsPage = () => {
-  const [groupFilters, setGroupFilters] = useState<GroupFiltersType>({});
-  const [page, setPage] = useState(1);
+  const [groupsQuery, setGroupsQuery] = useState<GetAllGroupsQuery>({
+    page: 1,
+    pageSize: 10,
+  });
 
   const session = useSession();
 
   const { data, refetch, isLoading } = useQuery(
-    ["groups", groupFilters, page, session.data?.accessToken],
-    () => getAllGroups(groupFilters, page, session.data?.accessToken!),
+    ["groups", groupsQuery, session.data?.accessToken],
+    () => getAllGroups(groupsQuery, session.data?.accessToken!),
     {
       enabled: !!session.data?.accessToken,
       initialData: {
@@ -60,6 +62,10 @@ const GroupsPage = () => {
 
   const isAnyGroupSelected = selectedGroups.length > 0;
 
+  const setPage = (page: number) => {
+    setGroupsQuery((prev) => ({ ...prev, page }));
+  };
+
   if (!data || isLoading || !session.data?.accessToken) {
     return <LoadingSpinner size={100} />;
   }
@@ -71,7 +77,7 @@ const GroupsPage = () => {
   return (
     <div className="w-full h-full p-10">
       <div className="flex items-center justify-end">
-        <GroupFilters setGroupFilters={setGroupFilters} />
+        <GroupFilters setGroupsQuery={setGroupsQuery} />
         <GroupAddSchedule
           groups={selectedGroups}
           disabled={!isAnyGroupSelected}
@@ -83,7 +89,7 @@ const GroupsPage = () => {
         groups={data.groups}
         onRowSelectionChange={onRowSelectionChange}
         rowSelection={rowSelection}
-        page={page}
+        page={data.page}
         setPage={setPage}
         pageCount={data.pageCount}
       />

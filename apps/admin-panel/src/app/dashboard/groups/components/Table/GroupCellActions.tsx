@@ -15,29 +15,19 @@ import Modal from "@/components/Modal";
 
 import GroupDeleteModal from "./GroupDeleteModal";
 import GroupEditModal from "./GroupEditModal";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface GroupCellActionsProps {
   row: Row<Group>;
 }
 
 const GroupCellActions = ({ row }: GroupCellActionsProps) => {
-  const { isModalOpen, toggleModal } = useModal();
-  const [modalAction, setModalAction] = useState<"edit" | "delete">("edit");
+  const [dialog, setDialog] = useState<"edit" | "delete" | undefined>();
 
   const group = row.original;
 
-  const openEditModal = () => {
-    setModalAction("edit");
-    toggleModal();
-  };
-
-  const openDeleteModal = () => {
-    setModalAction("delete");
-    toggleModal();
-  };
-
   return (
-    <>
+    <Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -46,18 +36,21 @@ const GroupCellActions = ({ row }: GroupCellActionsProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={openEditModal}>Изменить</DropdownMenuItem>
-          <DropdownMenuItem onClick={openDeleteModal}>Удалить</DropdownMenuItem>
+          <DialogTrigger asChild>
+            <DropdownMenuItem onClick={() => setDialog("edit")}>Изменить</DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger asChild>
+            <DropdownMenuItem onClick={() => setDialog("delete")}>Удалить</DropdownMenuItem>
+          </DialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Modal isOpen={isModalOpen} onClose={toggleModal}>
-        {modalAction === "edit" ? (
-          <GroupEditModal group={group} onClose={toggleModal} />
-        ) : (
-          <GroupDeleteModal id={group.id} code={group.code} onClose={toggleModal} />
+      <DialogContent className="text-black">
+        {dialog === "edit" && <GroupEditModal group={group} onClose={() => setDialog(undefined)} />}
+        {dialog === "delete" && (
+          <GroupDeleteModal id={group.id} code={group.code} onClose={() => setDialog(undefined)} />
         )}
-      </Modal>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 };
 

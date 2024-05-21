@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, useState } from "react";
+import { useState } from "react";
 import {
   PaginationState,
   RowSelectionState,
@@ -34,7 +34,7 @@ interface TableProps {
   rowSelection: RowSelectionState;
   page: number;
   pageCount: number;
-  setPage: Dispatch<Updater<number>>;
+  setPage: (page: number) => void;
 }
 
 const GroupTable = ({
@@ -118,7 +118,7 @@ const GroupTable = ({
           <Button
             variant="outline"
             className="text-black"
-            onClick={() => setPage((prev) => prev - 1)}
+            onClick={() => setPage(page - 1)}
             disabled={page === 1}
           >
             Назад
@@ -126,7 +126,7 @@ const GroupTable = ({
           <Button
             variant="outline"
             className="text-black"
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={() => setPage(page + 1)}
             disabled={page === pageCount}
           >
             Вперед

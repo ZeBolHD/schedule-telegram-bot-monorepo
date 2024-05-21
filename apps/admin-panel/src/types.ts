@@ -1,4 +1,4 @@
-import { Faculty, Group as PrismaGroup, TelegramUser as PrismaTelegramUser } from "@repo/database";
+import { Group as PrismaGroup, TelegramUser as PrismaTelegramUser } from "@repo/database";
 
 export type Group = PrismaGroup & {
   userCount: number;
@@ -46,4 +46,35 @@ export type GroupFiltersType = {
   facultyId?: string | number;
   studyType?: string | number;
   grade?: string | number;
+};
+
+export type GetAllGroupsQuery = GroupFiltersType & {
+  page?: number;
+  pageSize?: number;
+};
+
+export type Teacher = {
+  id: number;
+  name: string;
+  place: string;
+  contact?: string;
+  departmentId: string;
+  departmentName: string;
+  createdAt: Date;
+};
+
+export type GetAllTeachersQuery = {
+  page?: number;
+  pageSize?: number;
+  departmentId?: string;
+  createdAt?: "desc" | "asc";
+};
+
+export type GetAllTeachersResponse = {
+  teachers: Teacher[];
+  departmentName: string;
+  count: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
 };
