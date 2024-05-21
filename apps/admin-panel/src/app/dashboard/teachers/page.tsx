@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import TeachersTable from "./components/Table";
+import TeacherCreate from "./components/TeacherCreate";
 
 const Teachers = () => {
   const [teachersQuery, setTeachersQuery] = useState<GetAllTeachersQuery>({
@@ -16,7 +17,7 @@ const Teachers = () => {
 
   const session = useSession();
   const { data, isLoading } = useQuery(
-    ["getAllTeachers", teachersQuery],
+    ["teachers", teachersQuery],
     () => getAllTeachers(teachersQuery, session.data?.accessToken!),
     {
       enabled: !!session.data?.accessToken,
@@ -45,12 +46,17 @@ const Teachers = () => {
 
   return (
     <div className="w-full h-full p-10">
-      <TeachersTable
-        teachers={data.teachers}
-        page={data.page}
-        setPage={setPage}
-        pageCount={data.pageCount}
-      />
+      <div className="w-full flex justify-end">
+        <TeacherCreate />
+      </div>
+      <div className="mt-5">
+        <TeachersTable
+          teachers={data.teachers}
+          page={data.page}
+          setPage={setPage}
+          pageCount={data.pageCount}
+        />
+      </div>
     </div>
   );
 };

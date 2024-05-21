@@ -10,6 +10,7 @@ import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
 // import GroupCellActions from "./GroupCellActions";
 import { API_URL } from "@/lib/consts";
+import TableCellActions from "./TeacherCellActions";
 
 const columns: ColumnDef<Teacher>[] = [
   {
@@ -42,17 +43,17 @@ const columns: ColumnDef<Teacher>[] = [
   },
   {
     accessorKey: "contact",
-    header: ({ column }) => <TableHeaderSortButton column={column} name="Контакт" />,
+    header: ({ column }) => <div className="w-full text-center">Контакт</div>,
     cell: ({ row }) => (
       <div className="text-center">{row.original.contact ? row.original.contact : "-"}</div>
     ),
   },
 
-  // {
-  //   id: "actions",
-  //   enableSorting: false,
-  //   cell: GroupCellActions,
-  // },
+  {
+    id: "actions",
+    enableSorting: false,
+    cell: TableCellActions,
+  },
 ];
 
 export default columns;

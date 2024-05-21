@@ -3,7 +3,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 
 import { Group } from "@/types";
-import useModal from "@/hooks/useModal";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Modal from "@/components/Modal";
 
 import GroupDeleteModal from "./GroupDeleteModal";
 import GroupEditModal from "./GroupEditModal";

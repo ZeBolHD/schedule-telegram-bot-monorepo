@@ -58,7 +58,7 @@ export type Teacher = {
   name: string;
   place: string;
   contact?: string;
-  departmentId: string;
+  departmentId: number;
   departmentName: string;
   createdAt: Date;
 };
@@ -77,4 +77,9 @@ export type GetAllTeachersResponse = {
   page: number;
   pageSize: number;
   pageCount: number;
+};
+
+export type Department = {
+  id: number;
+  name: string;
 };
