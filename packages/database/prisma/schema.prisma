@@ -80,7 +80,7 @@ model Teacher {
 }
 
 model AdminUser {
-  id        String   @id @unique @default(uuid())
+  id        Int      @id @unique @default(autoincrement())
   name      String   @unique
   password  String   @map("password")
   createdAt DateTime @default(now()) @map("created_at")
@@ -115,7 +115,7 @@ model Token {
   token  String    @unique
   exp    DateTime
   user   AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String    @map("user_id")
+  userId Int       @map("user_id")
 
   @@map("tokens")
 }
