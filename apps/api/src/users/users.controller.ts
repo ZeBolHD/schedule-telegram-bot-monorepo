@@ -28,7 +28,7 @@ export class UsersController {
   @Roles(Role.SUPER_ADMIN)
   @Delete(":id")
   async findOne(@Param("id") id: string) {
-    return await this.userService.delete(id);
+    return await this.userService.delete(+id);
   }
 
   @UseGuards(RolesGuard)

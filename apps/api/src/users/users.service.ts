@@ -9,13 +9,13 @@ export class UsersService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findOne(nameOrId: string): Promise<AdminUser | null> {
+  async findOne(nameOrId: string | number): Promise<AdminUser | null> {
     // this.logger.log(`Finding user ${nameOrId}`);
 
     const user = await this.prismaService.adminUser
       .findFirst({
         where: {
-          OR: [{ id: nameOrId }, { name: nameOrId }],
+          OR: [{ id: Number(nameOrId) ? Number(nameOrId) : undefined }, { name: String(nameOrId) }],
         },
       })
       .catch(() => {
@@ -92,7 +92,7 @@ export class UsersService {
     return createdUser;
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     this.logger.log(`Deleting user ${id}`);
 
     const user = await this.prismaService.adminUser

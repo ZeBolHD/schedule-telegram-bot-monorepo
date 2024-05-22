@@ -71,7 +71,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userService.findOne(token.userId);
+    const user = await this.userService.findOne(+token.userId);
 
     return this.generateTokens(user);
   }
@@ -93,7 +93,7 @@ export class AuthService {
     };
   }
 
-  private async getRefreshToken(userId: string): Promise<Token> {
+  private async getRefreshToken(userId: number): Promise<Token> {
     const _token = await this.prismaService.token.findFirst({
       where: {
         userId,
