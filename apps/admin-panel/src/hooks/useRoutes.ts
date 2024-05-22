@@ -1,4 +1,4 @@
-import { BellRing, BookUser, UserRound, Users } from "lucide-react";
+import { BellRing, BookUser, File, UserRound, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
@@ -30,6 +30,12 @@ const useRoutes = () => {
         href: "/dashboard/teachers",
         icon: BookUser,
         active: pathname === "/dashboard/teachers",
+      },
+      {
+        label: "Документы",
+        href: "/dashboard/documents",
+        icon: File,
+        active: pathname === "/dashboard/documents",
       },
     ];
   }, [pathname]);

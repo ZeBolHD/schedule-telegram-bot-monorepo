@@ -83,3 +83,19 @@ export type Department = {
   id: number;
   name: string;
 };
+
+export type DocumentCategory = {
+  id: number;
+  name: string;
+};
+
+export type Document = {
+  id: number;
+  name: string;
+  fileId: string;
+  categoryId: number;
+};
+
+export type DocumentCategoryWithDocuments = DocumentCategory & {
+  documents: Document[];
+};

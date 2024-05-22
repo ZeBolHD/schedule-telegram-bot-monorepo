@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import TeachersTable from "./components/Table";
 import TeacherCreate from "./components/TeacherCreate";
 
-const Teachers = () => {
+const TeachersPage = () => {
   const [teachersQuery, setTeachersQuery] = useState<GetAllTeachersQuery>({
     page: 1,
     createdAt: "asc",
@@ -61,4 +61,4 @@ const Teachers = () => {
   );
 };
 
-export default Teachers;
+export default TeachersPage;
