@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
-import GroupCellActions from "./GroupCellActions";
+import GroupCellActions from "./Actions";
 import { API_URL } from "@/lib/consts";
 
 const columns: ColumnDef<Group>[] = [

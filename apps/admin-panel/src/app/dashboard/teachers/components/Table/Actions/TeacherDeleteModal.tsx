@@ -57,7 +57,7 @@ const TeacherDeleteModal = ({ id, name }: TeacherDeleteModalProps) => {
 
       <p className="mt-5">Вы уверены, что хотите удалить преподавателя {name}?</p>
 
-      <DialogFooter className="justify-end">
+      <DialogFooter className="mt-5 justify-end">
         <Button variant="destructive" className="ml-5" disabled={isLoading} onClick={onGroupDelete}>
           {isLoading ? <LoadingSpinner size={20} /> : "Удалить"}
         </Button>

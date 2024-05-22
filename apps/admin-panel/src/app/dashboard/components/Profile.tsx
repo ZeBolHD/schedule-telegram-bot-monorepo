@@ -1,28 +1,34 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
 
-import Modal from "@/components/Modal";
 import { Button } from "@/components/ui/button";
-import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import useModal from "@/hooks/useModal";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-interface ProfileProps {}
-
-const Profile = ({}: ProfileProps) => {
-  const { isModalOpen, toggleModal } = useModal();
-
+const Profile = () => {
   const session = useSession();
   const user = session.data?.user;
   const firstLetter = user?.name?.charAt(0).toUpperCase();
 
   const handleSignOut = () => {
     signOut();
+    document.getElementById("closeDialog")?.click();
+  };
+
+  const handleCancel = () => {
+    document.getElementById("closeDialog")?.click();
   };
 
   return (
-    <>
+    <Dialog>
       <div className="flex items-center">
         <div className="flex items-center">
           <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center">
@@ -30,43 +36,30 @@ const Profile = ({}: ProfileProps) => {
           </div>
           <p className="ml-4">{user?.name}</p>
         </div>
-        <Button
-          variant={"destructive"}
-          type="button"
-          onClick={toggleModal}
-          className="ml-10"
-        >
-          Выйти
-        </Button>
+        <DialogTrigger asChild>
+          <Button variant="destructive" type="button" className="ml-10">
+            Выйти
+          </Button>
+        </DialogTrigger>
       </div>
-      <Modal isOpen={isModalOpen} onClose={toggleModal}>
-        <CardHeader>
-          <h3 className="text-lg">Выход</h3>
-        </CardHeader>
-        <CardContent>
-          <p className="text-md">Вы действительно хотите выйти?</p>
-        </CardContent>
-        <CardFooter>
+      <DialogContent className="text-black">
+        <DialogHeader>
+          <DialogTitle>Выход</DialogTitle>
+        </DialogHeader>
+        <p className="text-md">Вы действительно хотите выйти?</p>
+        <DialogFooter>
           <div className="w-full flex justify-end">
-            <Button
-              type="button"
-              variant={"outline"}
-              onClick={toggleModal}
-              className="mr-5"
-            >
+            <Button type="button" onClick={handleCancel} variant="outline" className="mr-5">
               Отмена
             </Button>
-            <Button
-              type="button"
-              variant={"destructive"}
-              onClick={handleSignOut}
-            >
+            <Button type="button" variant="destructive" onClick={handleSignOut}>
               Выйти
             </Button>
+            <DialogClose id="closeDialog" />
           </div>
-        </CardFooter>
-      </Modal>
-    </>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

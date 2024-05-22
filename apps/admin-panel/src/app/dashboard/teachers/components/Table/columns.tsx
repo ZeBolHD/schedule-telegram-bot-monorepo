@@ -10,7 +10,7 @@ import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
 // import GroupCellActions from "./GroupCellActions";
 import { API_URL } from "@/lib/consts";
-import TableCellActions from "./TeacherCellActions";
+import TableCellActions from "./Actions";
 
 const columns: ColumnDef<Teacher>[] = [
   {

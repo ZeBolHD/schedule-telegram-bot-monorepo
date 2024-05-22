@@ -14,17 +14,12 @@ export const metadata: Metadata = {
   description: "Admin Panel for Telegram Bot",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={rubik.className}>
         <AuthContext>
           <ToasterContext />
-          <div id="modal"></div>
           {children}
         </AuthContext>
       </body>

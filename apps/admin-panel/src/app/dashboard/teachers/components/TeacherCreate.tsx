@@ -57,6 +57,7 @@ const TeacherCreate = () => {
   );
 
   const onSubmit: SubmitHandler<TeacherCreateType> = async (data: TeacherCreateType) => {
+    console.log(data);
     const status = await mutateAsync(data);
 
     if (!status) {
@@ -146,11 +147,12 @@ const TeacherCreate = () => {
               <Label id="contact">Контакт</Label>
               <Input
                 {...register("contact", {
-                  required: {
-                    message: "Поле является обязательным",
-                    value: true,
-                  },
+                  required: false,
+                  setValueAs: (value) => (value === "" ? null : value),
+                  validate: (value) =>
+                    !value ? true : value!.length > 2 || "Минимальная длина поля 3 символа",
                 })}
+                defaultValue={""}
                 id="contact"
                 placeholder="Контакт"
               />

@@ -66,20 +66,17 @@ const TeacherEditModal = ({ teacher }: TeacherEditModalProps) => {
   });
 
   const onSubmit: SubmitHandler<TeacherEditFormInput> = async (data) => {
-    console.log(data);
+    const status = await mutateAsync({ ...data });
 
-    const newTeacher = await mutateAsync({ ...data });
-
-    if (!newTeacher) {
+    if (status === 200) {
       reset();
-      toast.error("Что-то пошло не так");
-      return;
+      toast.success("Преподаватель успешно обновлён");
+      queryClient.refetchQueries(["teachers"]);
+      document.getElementById("closeDialog")?.click();
     }
 
-    document.getElementById("closeDialog")?.click();
-    toast.success("Преподаватель успешно обновлён");
-    queryClient.refetchQueries(["teachers"]);
-    document.getElementById("closeDialog")?.click();
+    toast.error("Что-то пошло не так");
+    return;
   };
 
   return (
@@ -144,7 +141,12 @@ const TeacherEditModal = ({ teacher }: TeacherEditModalProps) => {
           id="contact"
           placeholder="Контакт"
           defaultValue={teacher.contact}
-          {...register("contact")}
+          {...register("contact", {
+            required: false,
+            setValueAs: (value) => (value === "" ? null : value),
+            validate: (value) =>
+              value === "" ? true : value.length > 1 || "Минимальная длина поля 3 символа",
+          })}
           className="mt-2"
         />
       </div>

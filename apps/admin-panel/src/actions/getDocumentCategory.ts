@@ -18,7 +18,7 @@ const getDocumentCategory = async (id: number, accessToken: string) => {
     return data;
   } catch (e: AxiosError | any) {
     console.log(e);
-    return e.response?.status;
+    return null;
   }
 };
 

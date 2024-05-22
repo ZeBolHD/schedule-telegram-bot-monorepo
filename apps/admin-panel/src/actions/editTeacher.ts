@@ -1,6 +1,6 @@
 import { API_URL } from "@/lib/consts";
 import { Teacher } from "@/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const editTeacher = async (
   teacher: Omit<Teacher, "createdAt" | "departmentName">,
@@ -13,15 +13,15 @@ const editTeacher = async (
   const url = API_URL + "teachers/" + teacher.id;
 
   try {
-    const { data } = await axios.patch<Teacher>(url, teacher, {
+    const { status } = await axios.patch<Teacher>(url, teacher, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return data;
-  } catch (e) {
+    return status;
+  } catch (e: AxiosError | any) {
     console.log(e);
-    return null;
+    return e.response?.status;
   }
 };
 

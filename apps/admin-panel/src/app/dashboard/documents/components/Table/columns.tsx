@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DocumentCategoryWithDocuments } from "@/types";
-import DocumentCategoryCellActions from "./DocumentCategoryCellActions";
+import DocumentCategoryCellActions from "./Actions";
 
 const columns: ColumnDef<DocumentCategoryWithDocuments>[] = [
   {
