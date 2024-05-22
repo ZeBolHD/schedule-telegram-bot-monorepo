@@ -34,13 +34,22 @@ export class UsersService {
     return user;
   }
 
-  async findAll(): Promise<AdminUser[]> {
+  async findAll(): Promise<Omit<AdminUser, "password">[]> {
     this.logger.log("Finding all users");
 
-    const users = await this.prismaService.adminUser.findMany().catch(() => {
-      this.logger.error("Failed to find users");
-      return [];
-    });
+    const users = await this.prismaService.adminUser
+      .findMany({
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          createdAt: true,
+        },
+      })
+      .catch(() => {
+        this.logger.error("Failed to find users");
+        return [];
+      });
 
     this.logger.log(`Found ${users.length} users`);
 
@@ -66,7 +75,7 @@ export class UsersService {
     const createdUser = await this.prismaService.adminUser
       .create({
         data: user,
-        select: { id: true, name: true, role: true },
+        select: { id: true, name: true, role: true, createdAt: true },
       })
       .catch(() => {
         this.logger.error("Failed to create user");
@@ -103,7 +112,7 @@ export class UsersService {
     const deletedUser = await this.prismaService.adminUser
       .delete({
         where: { id },
-        select: { id: true, name: true, role: true },
+        select: { id: true, name: true, role: true, createdAt: true },
       })
       .catch(() => {
         this.logger.error("Failed to delete user");
