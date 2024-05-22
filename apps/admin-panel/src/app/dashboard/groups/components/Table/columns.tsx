@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+
 import { Faculty } from "@repo/database";
 
 import { Group } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import TableHeaderSortButton from "@/components/TableHeaderSortButton";
 
 import GroupCellActions from "./Actions";
 import { API_URL } from "@/lib/consts";
@@ -52,11 +51,7 @@ const columns: ColumnDef<Group>[] = [
     id: "facultyName",
     accessorKey: "faculty",
     header: () => <div className="w-full text-center">Факультет</div>,
-    cell: ({ row }) => {
-      const facultyName = row.original.facultyName as string;
-
-      return <div className="text-right">{facultyName}</div>;
-    },
+    cell: ({ row }) => <div className="text-center">{row.original.facultyName}</div>,
     enableColumnFilter: true,
     filterFn: (row, columnId, filterStatuses) => {
       if (filterStatuses.length == 0 || filterStatuses == "None") return true;
@@ -86,12 +81,13 @@ const columns: ColumnDef<Group>[] = [
   },
   {
     accessorKey: "grade",
-    header: ({ column }) => <TableHeaderSortButton column={column} name="Курс" />,
+    header: () => <div className="w-full text-center">Курс</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("grade")}</div>,
   },
   {
     accessorKey: "userCount",
-    header: ({ column }) => <TableHeaderSortButton column={column} name="Пользователи" />,
+    header: () => <div className="w-full text-center">Пользователи</div>,
+
     cell: ({ row }) => {
       return <div className="text-center">{(row.original.userCount || 0).toString()}</div>;
     },

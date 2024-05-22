@@ -22,7 +22,7 @@ const DocumentCategoryDeleteModal = ({ id, name }: DocumentCategoryDeleteModalPr
     },
   });
 
-  const onDocumentCategoryDelete = async () => {
+  const onDelete = async () => {
     const status = await mutateAsync(id);
 
     if (!status) {
@@ -48,12 +48,7 @@ const DocumentCategoryDeleteModal = ({ id, name }: DocumentCategoryDeleteModalPr
       <p className="mt-5">Вы уверены, что хотите категорию {name}?</p>
 
       <DialogFooter className="justify-end">
-        <Button
-          variant="destructive"
-          className="ml-5"
-          disabled={isLoading}
-          onClick={onDocumentCategoryDelete}
-        >
+        <Button variant="destructive" className="ml-5" disabled={isLoading} onClick={onDelete}>
           {isLoading ? <LoadingSpinner size={20} /> : "Удалить"}
         </Button>
       </DialogFooter>

@@ -1,9 +1,12 @@
 import { BellRing, BookUser, File, UserRound, Users } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 const useRoutes = () => {
   const pathname = usePathname();
+
+  const isSuperAdmin = useSession().data?.user.role === "SUPER_ADMIN";
 
   const routes = useMemo(() => {
     return [
@@ -37,8 +40,19 @@ const useRoutes = () => {
         icon: File,
         active: pathname === "/dashboard/documents",
       },
-    ];
-  }, [pathname]);
+    ].concat(
+      !isSuperAdmin
+        ? []
+        : [
+            {
+              label: "Администраторы",
+              href: "/dashboard/admins",
+              icon: Users,
+              active: pathname === "/dashboard/admins",
+            },
+          ],
+    );
+  }, [pathname, isSuperAdmin]);
 
   return routes;
 };

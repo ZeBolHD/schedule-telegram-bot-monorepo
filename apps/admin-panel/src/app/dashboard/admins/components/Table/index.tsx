@@ -18,25 +18,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { DocumentCategoryWithDocuments } from "@/types";
+import { Admin } from "@/types";
 
 import columns from "./columns";
 
-interface DocumentCategoriesTableProps {
-  categories: DocumentCategoryWithDocuments[];
+interface AdminsTableProps {
+  admins: Admin[];
 }
 
-const DocumentCategoriesTable = ({ categories }: DocumentCategoriesTableProps) => {
+const AdminsTable = ({ admins }: AdminsTableProps) => {
   const table = useReactTable({
-    data: categories,
+    data: admins,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  const categoriesCount = categories.length;
 
   return (
     <>
@@ -85,4 +82,4 @@ const DocumentCategoriesTable = ({ categories }: DocumentCategoriesTableProps) =
   );
 };
 
-export default DocumentCategoriesTable;
+export default AdminsTable;

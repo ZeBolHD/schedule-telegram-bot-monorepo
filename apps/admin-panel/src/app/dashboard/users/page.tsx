@@ -18,7 +18,7 @@ const UsersPage = () => {
     isLoading,
     refetch,
   } = useQuery(
-    ["users", session.data?.accessToken],
+    ["telegramUsers", session.data?.accessToken],
     () => getAllTelegramUsers(session.data?.accessToken!),
     {
       enabled: !!session.data?.accessToken,

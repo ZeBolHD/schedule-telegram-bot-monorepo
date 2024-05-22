@@ -5,6 +5,11 @@ export type Group = PrismaGroup & {
   facultyName: string;
 };
 
+export enum Role {
+  SUPER_ADMIN = "SUPER_ADMIN",
+  ADMIN = "ADMIN",
+}
+
 export type GroupApiResponse = {
   groups: Group[];
   count: number;
@@ -98,4 +103,10 @@ export type Document = {
 
 export type DocumentCategoryWithDocuments = DocumentCategory & {
   documents: Document[];
+};
+
+export type Admin = {
+  id: number;
+  name: string;
+  role: Role;
 };
