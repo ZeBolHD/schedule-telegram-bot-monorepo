@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import TeachersTable from "./components/Table";
 import TeacherCreate from "./components/TeacherCreate";
+import TeachersFilters from "./components/TeachersFilter";
 
 const TeachersPage = () => {
   const [teachersQuery, setTeachersQuery] = useState<GetAllTeachersQuery>({
@@ -47,6 +48,7 @@ const TeachersPage = () => {
   return (
     <div className="w-full h-full p-10">
       <div className="w-full flex justify-end">
+        <TeachersFilters setTeachersQuery={setTeachersQuery} />
         <TeacherCreate />
       </div>
       <div className="mt-5">

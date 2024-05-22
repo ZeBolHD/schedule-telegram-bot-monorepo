@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import deleteGroup from "@/actions/deleteGroup";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DialogClose, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import deleteTeacher from "@/actions/deleteTeacher";
 
 interface TeacherDeleteModalProps {
@@ -61,6 +61,7 @@ const TeacherDeleteModal = ({ id, name }: TeacherDeleteModalProps) => {
         <Button variant="destructive" className="ml-5" disabled={isLoading} onClick={onGroupDelete}>
           {isLoading ? <LoadingSpinner size={20} /> : "Удалить"}
         </Button>
+        <DialogClose id="closeDialog" />
       </DialogFooter>
     </div>
   );

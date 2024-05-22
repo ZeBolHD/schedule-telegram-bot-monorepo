@@ -71,7 +71,7 @@ export type Teacher = {
 export type GetAllTeachersQuery = {
   page?: number;
   pageSize?: number;
-  departmentId?: string;
+  departmentId?: number;
   createdAt?: "desc" | "asc";
 };
 

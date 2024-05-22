@@ -89,20 +89,25 @@ const AdminCreate = () => {
             <Label htmlFor="name">Имя</Label>
             <Input
               {...register("name", { required: { message: "Обязательное поле", value: true } })}
-              className="w-full"
+              className="w-full mt-2"
               type="text"
               placeholder="Имя администратора"
             />
+            {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name.message}</p>}
           </div>
 
           <div className="mt-5">
             <Label htmlFor="password">Пароль</Label>
             <Input
               {...register("password", { required: { message: "Обязательное поле", value: true } })}
-              className="w-full"
+              minLength={8}
+              className="w-full mt-2"
               type="text"
               placeholder="Пароль"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-2">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="mt-5">
@@ -110,9 +115,10 @@ const AdminCreate = () => {
             <Controller
               name="role"
               control={control}
+              rules={{ required: { message: "Обязательное поле", value: true } }}
               render={({ field }) => (
-                <Select>
-                  <SelectTrigger>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Роль" />
                   </SelectTrigger>
                   <SelectContent>
@@ -125,6 +131,8 @@ const AdminCreate = () => {
                 </Select>
               )}
             />
+
+            {errors.role && <p className="text-red-500 text-sm mt-2">{errors.role.message}</p>}
           </div>
           <DialogFooter className="mt-5">
             <Button className="bg-blue-500 hover:bg-blue-600" type="submit">

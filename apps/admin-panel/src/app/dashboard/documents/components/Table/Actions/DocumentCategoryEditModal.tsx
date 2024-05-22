@@ -109,8 +109,10 @@ const DocumentCategoryEditModal = ({ id }: DocumentCategoryEditModalProps) => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-5">
-          <Label htmlFor="documents">Добавление новых документов</Label>
-          <Input className="mt-2" type="file" multiple {...register("documents")} />
+          <Label htmlFor="documents" className="mt-5">
+            Добавление новых документов
+          </Label>
+          <Input className="mt-2" type="file" multiple id="documents" {...register("documents")} />
         </div>
         <DialogFooter className="mt-5">
           <Button

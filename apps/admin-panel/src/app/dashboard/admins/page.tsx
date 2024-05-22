@@ -31,13 +31,17 @@ const Admins = () => {
     return <LoadingSpinner size={100} />;
   }
 
+  const adminsWithoutUser = admins?.filter(
+    (admin) => String(admin.id) !== String(session.data?.user.id),
+  );
+
   return (
     <div className="p-10">
       <div className="flex justify-end">
         <AdminCreate />
       </div>
       <div className="mt-10">
-        <AdminsTable admins={admins || []} />
+        <AdminsTable admins={adminsWithoutUser || []} />
       </div>
     </div>
   );

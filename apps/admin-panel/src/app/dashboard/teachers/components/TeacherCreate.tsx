@@ -34,6 +34,7 @@ const TeacherCreate = () => {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm<TeacherCreateType>();
@@ -57,7 +58,6 @@ const TeacherCreate = () => {
   );
 
   const onSubmit: SubmitHandler<TeacherCreateType> = async (data: TeacherCreateType) => {
-    console.log(data);
     const status = await mutateAsync(data);
 
     if (!status) {
@@ -72,6 +72,7 @@ const TeacherCreate = () => {
 
     if (status === 201) {
       toast.success("Преподаватель успешно создан");
+      reset();
       document.getElementById("closeDialog")?.click();
       return;
     }

@@ -80,6 +80,7 @@ const DocumentCategoryCreate = () => {
               id="name"
               type="text"
               placeholder="Название категории"
+              className="mt-2"
             />
 
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
