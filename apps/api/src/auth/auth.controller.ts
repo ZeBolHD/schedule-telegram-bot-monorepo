@@ -12,9 +12,7 @@ import {
 } from "@nestjs/common";
 import { LoginDto } from "./dto";
 import { AuthService } from "./auth.service";
-import { Cookies, Public, Roles } from "@common/decorators";
-import { Role } from "@repo/database";
-import { RolesGuard } from "./guards/role.guard";
+import { Cookies, Public } from "@common/decorators";
 import { Tokens } from "./interfaces";
 import type { Request, Response } from "express";
 import { ConfigService } from "@nestjs/config";

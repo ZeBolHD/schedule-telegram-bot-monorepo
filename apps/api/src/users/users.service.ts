@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, Logger } from "@nes
 import { AdminUser } from "@repo/database";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "./dto";
+import { hashSync } from "bcrypt";
 
 @Injectable()
 export class UsersService {
@@ -72,9 +73,11 @@ export class UsersService {
       throw new ConflictException(`User ${user.name} already exists`);
     }
 
+    const hashedPassword = hashSync(user.password, 12);
+
     const createdUser = await this.prismaService.adminUser
       .create({
-        data: user,
+        data: { ...user, password: hashedPassword },
         select: { id: true, name: true, role: true, createdAt: true },
       })
       .catch(() => {
