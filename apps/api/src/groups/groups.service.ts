@@ -145,6 +145,9 @@ export class GroupsService {
     let documentId: string | null = null;
 
     if (scheduleFile) {
+      scheduleFile.originalname = Buffer.from(scheduleFile.originalname, "latin1").toString(
+        "utf-8",
+      );
       const fileId = await this.botService.getDocumentId(scheduleFile);
       documentId = fileId;
     }
@@ -226,6 +229,10 @@ export class GroupsService {
       throw new BadRequestException(`Failed to find groups ${dto.groupIds.join(",")}`);
     }
 
+    scheduleFile.originalname = Buffer.from(scheduleFile.originalname, "latin1").toString("utf-8");
+
+    console.log(scheduleFile.originalname);
+
     const documentId = await this.botService.getDocumentId(scheduleFile);
 
     await this.prismaService.group
@@ -246,8 +253,6 @@ export class GroupsService {
       });
 
     this.logger.log(`Updated schedule for groups ${dto.groupIds.join(",")}`);
-
-    console.log(notification);
 
     if (notification) {
       for (const group of groups) {

@@ -31,7 +31,7 @@ export class DocumentsController {
   @Roles(Role.ADMIN)
   @Get("categories/:categoryId")
   async getDocumentsByCategoryId(@Param("categoryId") categoryId: string) {
-    return this.documentsService.getCategoryById(+categoryId);
+    return this.documentsService.findCategoryById(+categoryId);
   }
 
   @UseGuards(RolesGuard)
@@ -67,7 +67,6 @@ export class DocumentsController {
   @UseInterceptors(FilesInterceptor("documents"))
   @Post("categories/:id")
   async uploadFiles(@Param("id") id: string, @UploadedFiles() documents: Express.Multer.File[]) {
-    console.log(documents);
     return this.documentsService.addDocumentsToCategory(+id, documents);
   }
 

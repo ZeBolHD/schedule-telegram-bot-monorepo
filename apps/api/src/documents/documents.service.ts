@@ -21,6 +21,7 @@ export class DocumentsService {
   ) {}
 
   async findAllDocumentCategories() {
+    this.logger.log("Finding all document categories");
     const documentCategories = await this.prismaService.documentCategory
       .findMany({
         select: {
@@ -33,6 +34,8 @@ export class DocumentsService {
         this.logger.error(err);
         throw new BadRequestException("Failed to get document categories");
       });
+
+    this.logger.log("Found all document categories");
 
     return documentCategories;
   }
@@ -116,7 +119,8 @@ export class DocumentsService {
     return editedDocumentCategory;
   }
 
-  async getCategoryById(id: number) {
+  async findCategoryById(id: number) {
+    this.logger.log(`Finding document category with id:${id}`);
     const category = await this.prismaService.documentCategory.findUnique({
       where: {
         id,
@@ -136,17 +140,10 @@ export class DocumentsService {
   }
 
   async addDocumentsToCategory(categoryId: number, documents: Express.Multer.File[]) {
+    this.logger.log(`Adding ${documents.length} documents to category ${categoryId}`);
     const category = await this.prismaService.documentCategory.findUnique({
       where: {
         id: categoryId,
-      },
-    });
-
-    const existsDocuments = await this.prismaService.document.findMany({
-      where: {
-        name: {
-          in: documents.map((document) => document.originalname),
-        },
       },
     });
 
@@ -154,11 +151,24 @@ export class DocumentsService {
       throw new NotFoundException(`Document category with id ${categoryId} not found`);
     }
 
+    const existsDocuments = await this.prismaService.document.findMany({
+      where: {
+        name: {
+          in: documents.map((document) => document.originalname),
+        },
+        categoryId: categoryId,
+      },
+    });
+
     if (existsDocuments.length > 0) {
       throw new ConflictException(
         `Documents with names ${existsDocuments.map((document) => document.name)} already exists in this category`,
       );
     }
+
+    documents.forEach((document) => {
+      document.originalname = Buffer.from(document.originalname, "latin1").toString("utf-8");
+    });
 
     const documentWithFileId: Omit<Document, "id">[] = [];
 
@@ -182,10 +192,13 @@ export class DocumentsService {
         throw new BadRequestException(`Failed to create documents in category ${categoryId}`);
       });
 
+    this.logger.log(`Added ${documents.length} documents to category ${categoryId}`);
+
     return createdDocuments;
   }
 
   async deleteDocument(id: number) {
+    this.logger.log(`Deleting document ${id}`);
     const document = await this.prismaService.document.findUnique({
       where: {
         id,
@@ -204,6 +217,8 @@ export class DocumentsService {
         this.logger.error(err);
         throw new BadRequestException(`Failed to delete document ${id}`);
       });
+
+    this.logger.log(`Deleted document ${id}`);
 
     return deletedDocument;
   }
