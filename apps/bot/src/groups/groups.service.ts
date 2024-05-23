@@ -106,7 +106,7 @@ export class GroupsService {
       .catch((e) => {
         this.logger.error(`Failed to find user:${userId} groups`);
         this.logger.error(e);
-        return [];
+        return [] as UserWithGroup & { group: { code: string } }[];
       });
 
     this.logger.log(`Found ${userGroups.length} groups for user:${userId}`);

@@ -1,40 +1,43 @@
-import { BotService } from "@/bot/bot.service";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
 export class HelpService {
-  constructor(
-    private readonly botService: BotService,
-    private readonly prismaService: PrismaService,
-  ) {}
+  private logger = new Logger(HelpService.name);
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async getDepartments() {
+  async findAllDepartments() {
+    this.logger.log("Finding all departments");
     return await this.prismaService.department.findMany();
   }
 
-  async getTeachersByDepartmentId(departmentId: number) {
+  async findAllTeachersByDepartmentId(departmentId: number) {
+    this.logger.log(`Finding all teachers by department with id:${departmentId}`);
     return await this.prismaService.teacher.findMany({
       where: { departmentId },
     });
   }
 
-  async getDepartmentById(departmentId: number) {
+  async findDepartmentById(departmentId: number) {
+    this.logger.log(`Finding department with id:${departmentId}`);
     return await this.prismaService.department.findUnique({ where: { id: departmentId } });
   }
 
-  async getDocumentCategories() {
+  async findAllDocumentCategories() {
+    this.logger.log("Finding all document categories");
     return await this.prismaService.documentCategory.findMany();
   }
 
-  async getDocumentsByCategoryId(categoryId: number) {
+  async findAllDocumentsByCategoryId(categoryId: number) {
+    this.logger.log(`Finding all documents by category with id:${categoryId}`);
     return await this.prismaService.document.findMany({
       where: { categoryId },
       select: { fileId: true, category: true },
     });
   }
 
-  async getCategoryWithDocumentsById(categoryId: number) {
+  async findCategoryWithDocumentsById(categoryId: number) {
+    this.logger.log(`Finding category with documents by id:${categoryId}`);
     return await this.prismaService.documentCategory.findUnique({
       where: { id: categoryId },
       select: { name: true, documents: true },

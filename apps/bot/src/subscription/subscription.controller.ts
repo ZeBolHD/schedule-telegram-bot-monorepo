@@ -16,63 +16,90 @@ export class SubscriptionController {
   @Command("my_subscriptions")
   @Action("my_subscriptions")
   async mySubscriptions(@Sender("id") senderId: number, @Ctx() context: Context) {
-    this.logger.log(`Received command /my_subscriptions from user with id:${senderId}`);
+    context.state.handled = true;
 
-    const userSubscriptions = await this.subscriptionService.getUserSubscriptions(senderId);
-    const userSubscriptionsIds = userSubscriptions.map(
-      (subscription) => subscription.subscriptionId,
+    const callbackQuery = context.callbackQuery as CallbackQuery.DataQuery;
+
+    this.logger.log(
+      `Received ${callbackQuery ? "action" : "command"} my_subscriptions from user with id:${senderId}`,
     );
 
-    const reply_markup = {
-      inline_keyboard: subscriptions.map((subscription) => {
-        const isSelected = userSubscriptionsIds.includes(subscription.id);
+    try {
+      const userSubscriptions = await this.subscriptionService.getUserSubscriptions(senderId);
+      const userSubscriptionsIds = userSubscriptions.map(
+        (subscription) => subscription.subscriptionId,
+      );
 
-        const text = `${subscription.name}   ${isSelected ? "✅" : "❌"}`;
+      const reply_markup = {
+        inline_keyboard: subscriptions.map((subscription) => {
+          const isSelected = userSubscriptionsIds.includes(subscription.id);
 
-        const query = isSelected
-          ? `unsubscribe.${subscription.id}`
-          : `subscribe.${subscription.id}`;
+          const text = `${subscription.name}   ${isSelected ? "✅" : "❌"}`;
 
-        return [
-          {
-            text: text,
-            callback_data: query,
-          },
-        ];
-      }),
-    };
+          const query = isSelected
+            ? `unsubscribe.${subscription.id}`
+            : `subscribe.${subscription.id}`;
 
-    if (context.callbackQuery) {
-      await context.editMessageText(locales.subscriptions.my_subscriptions, {
+          return [
+            {
+              text: text,
+              callback_data: query,
+            },
+          ];
+        }),
+      };
+
+      if (callbackQuery) {
+        await context.editMessageText(locales.subscriptions.my_subscriptions, {
+          reply_markup,
+        });
+
+        this.logger.log("Sent message with subscriptions to user with id:", senderId);
+        return;
+      }
+
+      await context.reply(locales.subscriptions.my_subscriptions, {
         reply_markup,
       });
-      return;
-    }
 
-    context.reply(locales.subscriptions.my_subscriptions, {
-      reply_markup,
-    });
+      this.logger.log("Sent message with subscriptions to user with id:", senderId);
+    } catch (e) {
+      this.logger.error("Error while getting user subscriptions", e);
+      context.reply(locales.error);
+    }
   }
 
-  @Action(/unsubscribe.*/)
+  @Action(/unsubscribe\.*/)
   async unsubscribe(@Ctx() context: Context) {
-    const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
-    const subscriptionId = Number(getParamFromCallbackQuery(data, "unsubscribe"));
+    context.state.handled = true;
+
+    const callbackQuery = (context.callbackQuery as CallbackQuery.DataQuery).data;
+    const subscriptionId = Number(getParamFromCallbackQuery(callbackQuery, "unsubscribe"));
 
     const userId = context.from.id;
 
-    this.logger.log(
-      `Received action unsubscribe.subscription.${subscriptionId} from user with id:${context.from.id}`,
-    );
+    this.logger.log(`Received action callbackQuery from user with id:${context.from.id}`);
 
-    await this.subscriptionService.unsubscribe(userId, subscriptionId);
-    await this.mySubscriptions(userId, context);
+    try {
+      await this.subscriptionService.unsubscribe(userId, subscriptionId);
+
+      this.logger.log(
+        `User with id:${userId} unsubscribed from subscription with id:${subscriptionId}`,
+      );
+
+      await this.mySubscriptions(userId, context);
+    } catch (e) {
+      this.logger.error("Error while unsubscribing from subscription", e);
+      context.reply(locales.error);
+    }
   }
 
-  @Action(/subscribe.*/)
+  @Action(/subscribe\.*/)
   async subscribe(@Ctx() context: Context) {
-    const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
-    const subscriptionId = Number(getParamFromCallbackQuery(data, "subscribe"));
+    context.state.handled = true;
+
+    const callbackQuery = (context.callbackQuery as CallbackQuery.DataQuery).data;
+    const subscriptionId = Number(getParamFromCallbackQuery(callbackQuery, "subscribe"));
 
     const userId = context.from.id;
 
@@ -80,7 +107,17 @@ export class SubscriptionController {
       `Received action subscribe.subscription.${subscriptionId} from user with id:${context.from.id}`,
     );
 
-    await this.subscriptionService.subscribe(userId, subscriptionId);
-    await this.mySubscriptions(userId, context);
+    try {
+      await this.subscriptionService.subscribe(userId, subscriptionId);
+
+      this.logger.log(
+        `User with id:${userId} subscribed to subscription with id:${subscriptionId}`,
+      );
+
+      await this.mySubscriptions(userId, context);
+    } catch (e) {
+      this.logger.error("Error while subscribing to subscription", e);
+      context.reply(locales.error);
+    }
   }
 }

@@ -18,49 +18,60 @@ export class GroupsController {
   ) {}
 
   @Command("my_groups")
-  async myGroups(messageId: number, @Sender("id") senderId: number) {
-    this.logger.log(`Received command /my_groups from user with id:${senderId}`);
+  async myGroups(messageId: number, @Sender("id") senderId: number, @Ctx() context: Context) {
+    context.state.handled = true;
 
-    const userWithGroups = await this.groupsService.getUserGroups(senderId);
-    const isUserWithGroups = !!userWithGroups.length;
-    const text = userWithGroups.length ? locales.my_groups.groups : locales.my_groups.no_groups;
+    this.logger.log(
+      `Received ${messageId ? "action" : "command"} my_groups from user with id:${senderId}`,
+    );
 
-    const reply_markup = isUserWithGroups
-      ? {
-          inline_keyboard: userWithGroups
-            .map((userWithGroup) => {
-              const query = `delete_group.group.${userWithGroup.groupId}`;
-              return [
-                {
-                  text: userWithGroup.group.code + " ❌",
-                  callback_data: query,
-                },
-              ];
-            })
-            .concat([
-              [
-                {
-                  text: locales.get_schedule.get,
-                  callback_data: "get_schedule",
-                },
-              ],
-            ]),
-        }
-      : undefined;
+    try {
+      const userWithGroups = await this.groupsService.getUserGroups(senderId);
+      const isUserWithGroups = !!userWithGroups.length;
+      const text = userWithGroups.length ? locales.my_groups.groups : locales.my_groups.no_groups;
 
-    if (messageId) {
-      await this.botService.editMessage(senderId, messageId, "", text, {
-        reply_markup,
-      });
-      return;
+      const reply_markup = isUserWithGroups
+        ? {
+            inline_keyboard: userWithGroups
+              .map((userWithGroup) => {
+                const query = `delete_group.group.${userWithGroup.groupId}`;
+                return [
+                  {
+                    text: userWithGroup.group.code + " ❌",
+                    callback_data: query,
+                  },
+                ];
+              })
+              .concat([
+                [
+                  {
+                    text: locales.get_schedule.get,
+                    callback_data: "get_schedule",
+                  },
+                ],
+              ]),
+          }
+        : undefined;
+
+      if (messageId) {
+        await context.editMessageText(text, {
+          reply_markup,
+        });
+        return;
+      }
+
+      await context.reply(text, { reply_markup });
+    } catch (e) {
+      this.logger.error("Failed to send message to telegram user", e);
+      context;
     }
-
-    await this.botService.sendMessage(senderId, text, { reply_markup });
   }
 
   @Command("select_group")
   @Action("select_group")
   async showFaculties(@Ctx() context: Context) {
+    context.state.handled = true;
+
     this.logger.log(`Received action /select_group from user with id:${context.from.id}`);
     const faculties = await this.groupsService.getFaculties();
     const reply_markup = {
@@ -85,6 +96,8 @@ export class GroupsController {
 
   @Action(/select_group.faculty.*.grade.*.group.*/)
   async selectGroup(@Ctx() context: Context) {
+    context.state.handled = true;
+
     const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
     const groupId = Number(getParamFromCallbackQuery(data, "group"));
     const facultyId = Number(getParamFromCallbackQuery(data, "faculty"));
@@ -111,6 +124,8 @@ export class GroupsController {
 
   @Action(/select_group.faculty.*.grade.*/)
   async showGroups(@Ctx() context: Context) {
+    context.state.handled = true;
+
     const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
     const facultyId = Number(getParamFromCallbackQuery(data, "faculty"));
     const grade = Number(getParamFromCallbackQuery(data, "grade"));
@@ -147,6 +162,8 @@ export class GroupsController {
 
   @Action(/select_group.faculty.*/)
   async showGrades(@Ctx() context: Context) {
+    context.state.handled = true;
+
     const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
     const facultyId = Number(getParamFromCallbackQuery(data, "faculty"));
 
@@ -182,6 +199,8 @@ export class GroupsController {
 
   @Action(/delete_group.*/)
   async deleteGroup(@Ctx() context: Context) {
+    context.state.handled = true;
+
     const data = (context.callbackQuery as CallbackQuery.DataQuery).data;
     const groupId = Number(getParamFromCallbackQuery(data, "group"));
 
@@ -191,6 +210,6 @@ export class GroupsController {
 
     await this.groupsService.deleteUserWithGroup(context.from.id, groupId);
 
-    this.myGroups(context.msgId, context.from.id);
+    this.myGroups(context.msgId, context.from.id, context);
   }
 }

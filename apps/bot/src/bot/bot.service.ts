@@ -1,14 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { InjectBot } from "nestjs-telegraf";
 import { Telegraf } from "telegraf";
 
 @Injectable()
 export class BotService {
-  constructor(
-    private readonly config: ConfigService,
-    @InjectBot("ScheduleBot") private readonly bot: Telegraf,
-  ) {
+  constructor(@InjectBot("ScheduleBot") private readonly bot: Telegraf) {
     bot.telegram.setMyCommands([
       { command: "start", description: "Старт" },
       { command: "my_subscriptions", description: "Мои подписки" },
@@ -17,6 +13,13 @@ export class BotService {
       { command: "my_subscriptions", description: "Мои подписки" },
       { command: "help", description: "Помощь" },
     ]);
+
+    bot.use(async (ctx, next) => {
+      await next();
+      if (!ctx.state.handled) {
+        await ctx.reply("Такой команды не существует");
+      }
+    });
   }
 
   sendMessage = this.bot.telegram.sendMessage.bind(
