@@ -127,7 +127,7 @@ const GroupTable = ({
             variant="outline"
             className="text-black"
             onClick={() => setPage(page + 1)}
-            disabled={page === pageCount}
+            disabled={page === pageCount || pageCount === 0}
           >
             Вперед
           </Button>

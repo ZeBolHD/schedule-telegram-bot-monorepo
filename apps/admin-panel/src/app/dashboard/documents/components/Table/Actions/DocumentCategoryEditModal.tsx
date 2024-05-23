@@ -8,10 +8,9 @@ import { DialogClose, DialogFooter, DialogHeader, DialogTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import DocumentListElement from "./DocumentListElement";
 import deleteDocument from "@/actions/deleteDocument";
 
@@ -28,6 +27,8 @@ const DocumentCategoryEditModal = ({ id }: DocumentCategoryEditModalProps) => {
 
   const session = useSession();
 
+  const queryClient = useQueryClient();
+
   const {
     data: category,
     isLoading: isCategoryLoading,
@@ -39,10 +40,12 @@ const DocumentCategoryEditModal = ({ id }: DocumentCategoryEditModalProps) => {
   const { mutateAsync: mutateAddDocuments, isLoading: isAddDocumentsLoading } = useMutation({
     mutationFn: (documents: FileList) =>
       addDocumentsToCategory(id, documents, session.data?.accessToken!),
+    onSuccess: () => queryClient.invalidateQueries(["categories"]),
   });
 
   const { mutateAsync: mutateDelete, isLoading: isDeleteLoading } = useMutation({
     mutationFn: (id: number) => deleteDocument(id, session.data?.accessToken!),
+    onSuccess: () => queryClient.invalidateQueries(["categories"]),
   });
 
   const handleDeleteDocument = async (id: number) => {
@@ -64,6 +67,11 @@ const DocumentCategoryEditModal = ({ id }: DocumentCategoryEditModalProps) => {
       toast.success("Документы успешно добавлены");
       refetchCategory();
       reset();
+      return;
+    }
+
+    if (status === 409) {
+      toast.error("Документ с таким названием уже есть в категории");
       return;
     }
 

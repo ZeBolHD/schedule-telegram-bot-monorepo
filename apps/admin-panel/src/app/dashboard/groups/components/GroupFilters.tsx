@@ -77,7 +77,7 @@ const GroupFilters = ({ setGroupsQuery }: GroupFiltersProps) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="w-60 ml-5">
+      <div className="w-48 ml-5">
         <Select onValueChange={changeStudyTypeFilter}>
           <SelectTrigger>
             <SelectValue placeholder="Форма обучения" />
@@ -98,7 +98,7 @@ const GroupFilters = ({ setGroupsQuery }: GroupFiltersProps) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="w-60 ml-5">
+      <div className="w-32 ml-5">
         <Select onValueChange={changeGradeFilter}>
           <SelectTrigger>
             <SelectValue placeholder="Курс" />

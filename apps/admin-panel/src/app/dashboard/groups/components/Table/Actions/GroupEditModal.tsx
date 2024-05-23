@@ -18,7 +18,6 @@ import { DialogClose, DialogFooter, DialogHeader, DialogTitle } from "@/componen
 
 interface GroupEditModalProps {
   group: Group;
-  onClose: () => void;
 }
 
 interface GroupEditFormInput {
@@ -27,7 +26,7 @@ interface GroupEditFormInput {
   notification: number;
 }
 
-const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
+const GroupEditModal = ({ group }: GroupEditModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, control, reset } = useForm<GroupEditFormInput>({
     defaultValues: {
@@ -76,7 +75,7 @@ const GroupEditModal = ({ group, onClose }: GroupEditModalProps) => {
     setIsLoading(false);
     toast.success("Группа успешно обновлена");
     queryClient.refetchQueries(["groups"]);
-    onClose();
+    document.getElementById("closeDialog")?.click();
   };
 
   return (

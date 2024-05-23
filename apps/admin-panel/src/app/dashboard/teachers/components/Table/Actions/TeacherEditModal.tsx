@@ -73,6 +73,7 @@ const TeacherEditModal = ({ teacher }: TeacherEditModalProps) => {
       toast.success("Преподаватель успешно обновлён");
       queryClient.refetchQueries(["teachers"]);
       document.getElementById("closeDialog")?.click();
+      return;
     }
 
     toast.error("Что-то пошло не так");

@@ -44,10 +44,8 @@ const GroupCellActions = ({ row }: GroupCellActionsProps) => {
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent className="text-black">
-        {dialog === "edit" && <GroupEditModal group={group} onClose={() => setDialog(undefined)} />}
-        {dialog === "delete" && (
-          <GroupDeleteModal id={group.id} code={group.code} onClose={() => setDialog(undefined)} />
-        )}
+        {dialog === "edit" && <GroupEditModal group={group} />}
+        {dialog === "delete" && <GroupDeleteModal id={group.id} code={group.code} />}
       </DialogContent>
     </Dialog>
   );

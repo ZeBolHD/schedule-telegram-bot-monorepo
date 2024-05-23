@@ -27,7 +27,7 @@ const DocumentsPage = () => {
       <div className="mb-10 flex justify-end">
         <DocumentCategoryCreate />
       </div>
-      <DocumentCategoriesTable categories={data!} />
+      <DocumentCategoriesTable categories={data || []} />
     </div>
   );
 };
