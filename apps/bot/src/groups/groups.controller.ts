@@ -51,7 +51,11 @@ export class GroupsController {
                 ],
               ]),
           }
-        : undefined;
+        : {
+            inline_keyboard: [
+              [{ text: locales.select_group.command, callback_data: "select_group" }],
+            ],
+          };
 
       if (messageId) {
         await context.editMessageText(text, {
@@ -107,19 +111,27 @@ export class GroupsController {
       `Received action select_group.faculty.${facultyId}.grade.${grade}.group.${groupId} from user with id:${context.from.id}`,
     );
 
-    const userWithGroup = await this.groupsService.setUserWithGroup(context.from.id, groupId);
+    try {
+      const userWithGroup = await this.groupsService.setUserWithGroup(context.from.id, groupId);
 
-    if (!userWithGroup) {
+      if (!userWithGroup) {
+        await context.editMessageText(locales.select_group.select_error);
+        return;
+      }
+
+      const reply_markup = {
+        inline_keyboard: [
+          [{ text: locales.select_group.select_another_group, callback_data: "select_group" }],
+        ],
+      };
+
+      await context.editMessageText(locales.select_group.selected + userWithGroup.group.code, {
+        reply_markup,
+      });
+    } catch (e) {
+      this.logger.error(e);
       await context.editMessageText(locales.select_group.select_error);
-      return;
     }
-
-    await context.editMessageText(
-      locales.select_group.selected +
-        userWithGroup.group.code +
-        "\n" +
-        locales.select_group.select_another_group,
-    );
   }
 
   @Action(/select_group.faculty.*.grade.*/)
@@ -134,30 +146,36 @@ export class GroupsController {
       `Received action select_group.${facultyId}.grade.${grade} from user with id:${context.from.id}`,
     );
 
-    const groups = await this.groupsService.getGroups(facultyId, grade);
+    try {
+      const groups = await this.groupsService.getGroups(facultyId, grade);
 
-    const reply_markup = {
-      inline_keyboard: [
-        ...groups.map((group) => {
-          const query = `select_group.faculty.${facultyId}.grade.${grade}.group.${group.id}`;
+      const reply_markup = {
+        inline_keyboard: [
+          ...groups.map((group) => {
+            const query = `select_group.faculty.${facultyId}.grade.${grade}.group.${group.id}`;
 
-          return [
+            return [
+              {
+                text: group.code,
+                callback_data: query,
+              },
+            ];
+          }),
+          [
             {
-              text: group.code,
-              callback_data: query,
+              text: locales.back,
+              callback_data: `select_group.faculty.${facultyId}`,
             },
-          ];
-        }),
-        [
-          {
-            text: locales.back,
-            callback_data: `select_group.faculty.${facultyId}`,
-          },
+          ],
         ],
-      ],
-    };
+      };
 
-    await context.editMessageText(locales.select_group.group, { reply_markup });
+      await context.editMessageText(locales.select_group.group, { reply_markup });
+    } catch (e) {
+      this.logger.error(e);
+      this.logger.error("Failed to send message to telegram user", e);
+      await context.editMessageText(locales.select_group.select_error);
+    }
   }
 
   @Action(/select_group.faculty.*/)
@@ -208,8 +226,15 @@ export class GroupsController {
       `Received action delete_group.group.${groupId} from user with id:${context.from.id}`,
     );
 
-    await this.groupsService.deleteUserWithGroup(context.from.id, groupId);
+    try {
+      await this.groupsService.deleteUserWithGroup(context.from.id, groupId);
 
-    this.myGroups(context.msgId, context.from.id, context);
+      this.myGroups(context.msgId, context.from.id, context);
+    } catch (e) {
+      this.logger.error(e);
+      this.logger.error("Failed to send message to telegram user", e);
+
+      await context.editMessageText(locales.select_group.select_error);
+    }
   }
 }

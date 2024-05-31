@@ -54,7 +54,7 @@ export class SubscriptionController {
           reply_markup,
         });
 
-        this.logger.log("Sent message with subscriptions to user with id:", senderId);
+        this.logger.log(`Sent message with subscriptions to user with id:${senderId}`);
         return;
       }
 
@@ -62,7 +62,7 @@ export class SubscriptionController {
         reply_markup,
       });
 
-      this.logger.log("Sent message with subscriptions to user with id:", senderId);
+      this.logger.log(`Sent message with subscriptions to user with id:${senderId}`);
     } catch (e) {
       this.logger.error("Error while getting user subscriptions", e);
       context.reply(locales.error);

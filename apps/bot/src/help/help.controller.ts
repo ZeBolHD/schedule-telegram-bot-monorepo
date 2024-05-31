@@ -106,8 +106,6 @@ export class HelpController {
     this.logger.log(`Received action ${callbackQuery} from user with id:${context.from.id}`);
 
     try {
-      await context.deleteMessage(context.msgId);
-
       const categoryId = Number(getParamFromCallbackQuery(callbackQuery, "documents"));
 
       const { name: categoryName, documents } =
@@ -124,6 +122,9 @@ export class HelpController {
       }));
 
       mediaGroup[documents.length - 1].caption = categoryName;
+
+      console.log(context.msgId);
+      await context.deleteMessage(context.msgId);
 
       await context.replyWithMediaGroup(mediaGroup);
 

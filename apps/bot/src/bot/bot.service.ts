@@ -11,7 +11,7 @@ export class BotService {
       { command: "select_group", description: "Выбрать группу" },
       { command: "my_groups", description: "Мои группы" },
       { command: "my_subscriptions", description: "Мои подписки" },
-      { command: "help", description: "Помощь" },
+      { command: "help", description: "Справочная информация" },
     ]);
 
     bot.use(async (ctx, next) => {
