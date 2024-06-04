@@ -1,15 +1,7 @@
-import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { Faculty } from "@repo/database";
 
-import { Group, Teacher } from "@/types";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import TableHeaderSortButton from "@/components/TableHeaderSortButton";
+import { Teacher } from "@/types";
 
-// import GroupCellActions from "./GroupCellActions";
-import { API_URL } from "@/lib/consts";
 import TableCellActions from "./Actions";
 
 const columns: ColumnDef<Teacher>[] = [

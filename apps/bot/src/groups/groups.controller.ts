@@ -12,15 +12,11 @@ import { getParamFromCallbackQuery } from "@/lib";
 @Update()
 export class GroupsController {
   private readonly logger = new Logger(GroupsController.name);
-  constructor(
-    private readonly botService: BotService,
-    private readonly groupsService: GroupsService,
-  ) {}
+  constructor(private readonly groupsService: GroupsService) {}
 
   @Command("my_groups")
   async myGroups(messageId: number, @Sender("id") senderId: number, @Ctx() context: Context) {
     context.state.handled = true;
-
     this.logger.log(
       `Received ${messageId ? "action" : "command"} my_groups from user with id:${senderId}`,
     );
@@ -35,21 +31,9 @@ export class GroupsController {
             inline_keyboard: userWithGroups
               .map((userWithGroup) => {
                 const query = `delete_group.group.${userWithGroup.groupId}`;
-                return [
-                  {
-                    text: userWithGroup.group.code + " ❌",
-                    callback_data: query,
-                  },
-                ];
+                return [{ text: userWithGroup.group.code + " ❌", callback_data: query }];
               })
-              .concat([
-                [
-                  {
-                    text: locales.get_schedule.get,
-                    callback_data: "get_schedule",
-                  },
-                ],
-              ]),
+              .concat([[{ text: locales.get_schedule.get, callback_data: "get_schedule" }]]),
           }
         : {
             inline_keyboard: [

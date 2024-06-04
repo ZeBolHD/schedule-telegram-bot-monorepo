@@ -5,7 +5,6 @@ import { CreateFacultyDto } from "./dto";
 @Injectable()
 export class FacultiesService {
   private readonly logger = new Logger(FacultiesService.name);
-
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAll() {

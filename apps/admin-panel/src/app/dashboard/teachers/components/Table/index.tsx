@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Group, Teacher } from "@/types";
+import { Teacher } from "@/types";
 
 import {
   Table,
@@ -36,11 +36,6 @@ interface TableProps {
 }
 
 const TeachersTable = ({ teachers, page, setPage, pageCount }: TableProps) => {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
   const table = useReactTable({
     data: teachers,
     columns,
@@ -48,10 +43,6 @@ const TeachersTable = ({ teachers, page, setPage, pageCount }: TableProps) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onPaginationChange: setPagination,
-    state: {
-      pagination,
-    },
   });
 
   return (

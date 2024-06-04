@@ -52,7 +52,7 @@ const TeacherDeleteModal = ({ id, name }: TeacherDeleteModalProps) => {
   return (
     <div>
       <DialogHeader>
-        <DialogTitle>Удаление группы</DialogTitle>
+        <DialogTitle>Удаление преподавателя</DialogTitle>
       </DialogHeader>
 
       <p className="mt-5">Вы уверены, что хотите удалить преподавателя {name}?</p>

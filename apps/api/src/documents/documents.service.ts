@@ -8,13 +8,11 @@ import {
 import { PrismaService } from "@prisma/prisma.service";
 import { CreateDocumentCategoryDto } from "./dto";
 import { BotService } from "src/bot/bot.service";
-
 import { Document } from "@repo/database";
 
 @Injectable()
 export class DocumentsService {
   private logger = new Logger(DocumentsService.name);
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly botService: BotService,
@@ -34,7 +32,6 @@ export class DocumentsService {
         this.logger.error(err);
         throw new BadRequestException("Failed to get document categories");
       });
-
     this.logger.log("Found all document categories");
 
     return documentCategories;

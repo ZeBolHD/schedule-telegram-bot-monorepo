@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "@prisma/prisma.service";
 import { SendAnnouncementDto, SendNewsDto } from "./dto";
 import { BotService } from "src/bot/bot.service";
@@ -10,18 +9,9 @@ export class NotificationsService {
   private logger = new Logger(NotificationsService.name);
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly prismaService: PrismaService,
     private readonly botService: BotService,
   ) {}
-
-  private BOT_TOKEN = this.configService.get<string>("BOT_TOKEN", "");
-  private CHAT_ID = this.configService.get<string>("UPLOAD_CHATID", "");
-
-  private SENDPHOTO_URL = `https://api.telegram.org/bot${this.BOT_TOKEN}/sendPhoto`;
-  private SENDMEDIAGROUP_URL = `https://api.telegram.org/bot${this.BOT_TOKEN}/sendMediaGroup`;
-  private SENDMESSAGE_URL = `https://api.telegram.org/bot${this.BOT_TOKEN}/sendMessage`;
-  private SENDDOCUMENT_URL = `https://api.telegram.org/bot${this.BOT_TOKEN}/sendDocument`;
 
   async sendAnnouncement(dto: SendAnnouncementDto) {
     this.logger.log(`Sending announcement with heading: ${dto.heading}`);
