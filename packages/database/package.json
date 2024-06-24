@@ -5,18 +5,15 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "db:generate": "prisma generate && tsc",
-    "db:push": "dotenv -e ../../.env prisma db push && tsc",
+    "db:generate": "pnpm dlx prisma generate && tsc",
+    "db:push": "pnpm dlx dotenv -e ../../.env prisma db push && tsc",
     "test": "tsc"
   },
   "dependencies": {
-    "@prisma/client": "^5.10.2",
+    "@prisma/client": "^5.15.0",
     "typescript": "latest"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "prisma": "^5.15.0"
   }
 }

@@ -19,12 +19,41 @@ services:
 
   bot:
     container_name: bot
+    platform: linux/x86_64
     build:
       context: .
       dockerfile: ./apps/bot/Dockerfile
     restart: always
+
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/schedule_bot
+    env_file: .env
+    depends_on:
+      - postgres
+
+  api:
+    container_name: bot-api
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/schedule_bot
+    env_file: .env
+    depends_on:
+      - postgres
+
+  admin-panel:
+    container_name: bot-admin-panel
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./apps/admin-panel/Dockerfile
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/schedule_bot
+      - NEXT_PUBLIC_API_URL=http://bot-api:3500
     env_file: .env
     depends_on:
       - postgres

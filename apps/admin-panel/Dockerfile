@@ -10,7 +10,7 @@ RUN apk update
 WORKDIR /app
 RUN npm install -g turbo
 COPY . .
-RUN turbo prune --scope=bot --docker
+RUN turbo prune --scope=admin-panel --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -26,6 +26,7 @@ RUN pnpm install --frozen-lockfile
 
 # Build the project
 COPY --from=builder /app/out/full/ .
-RUN pnpm dlx turbo run build --filter=bot
 
-CMD node apps/bot/dist/main.js
+RUN pnpm dlx turbo db:generate
+
+CMD cd apps/admin-panel && pnpm run build && pnpm run start

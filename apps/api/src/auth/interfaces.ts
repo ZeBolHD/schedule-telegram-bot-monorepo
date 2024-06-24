@@ -1,4 +1,4 @@
-import { Role, Token } from "@prisma/client";
+import { Role, Token } from "@repo/database";
 
 export interface Tokens {
   accessToken: string;

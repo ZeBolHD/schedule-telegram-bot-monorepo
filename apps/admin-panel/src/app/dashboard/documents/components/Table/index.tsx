@@ -36,8 +36,6 @@ const DocumentCategoriesTable = ({ categories }: DocumentCategoriesTableProps) =
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const categoriesCount = categories.length;
-
   return (
     <>
       <div className="rounded-md border">

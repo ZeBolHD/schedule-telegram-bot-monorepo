@@ -1,4 +1,3 @@
-import { BotService } from "@/bot/bot.service";
 import { Injectable, Logger } from "@nestjs/common";
 import { Action, Ctx, Help, Update } from "nestjs-telegraf";
 import { HelpService } from "./help.service";

@@ -1,4 +1,4 @@
-FROM --platform=linux/x86_64 node:18-alpine AS base
+FROM node:18-alpine AS base
 
 # The web Dockerfile is copy-pasted into our main docs at /docs/handbook/deploying-with-docker.
 # Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
@@ -10,7 +10,7 @@ RUN apk update
 WORKDIR /app
 RUN npm install -g turbo
 COPY . .
-RUN turbo prune --scope=bot --docker
+RUN turbo prune --scope=api --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -26,6 +26,6 @@ RUN pnpm install --frozen-lockfile
 
 # Build the project
 COPY --from=builder /app/out/full/ .
-RUN pnpm dlx turbo run build --filter=bot
+RUN pnpm dlx turbo run build --filter=api
 
-CMD node apps/bot/dist/main.js
+CMD node apps/api/dist/src/main.js

@@ -51,19 +51,14 @@ const GroupEditModal = ({ group }: GroupEditModalProps) => {
   });
 
   const onSubmit: SubmitHandler<GroupEditFormInput> = async (data) => {
-    // if (!data.file && Number(data.grade) === group.grade) {
-    //   return;
-    // }
-
-    if (!data.file) {
+    if (!data.file && Number(data.grade) === group.grade) {
+      toast.error("Заполните хотя бы одно поле");
       return;
     }
 
-    console.log(data);
-
     setIsLoading(true);
 
-    const newGroup = await mutate.mutateAsync({ ...data, file: data.file[0] as File });
+    const newGroup = await mutate.mutateAsync({ ...data, file: data["file"] as unknown as File });
 
     if (!newGroup) {
       setIsLoading(false);
