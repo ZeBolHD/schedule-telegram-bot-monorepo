@@ -34,7 +34,10 @@ export class GroupsController {
                 const query = `delete_group.group.${userWithGroup.groupId}`;
                 return [{ text: userWithGroup.group.code + " ❌", callback_data: query }];
               })
-              .concat([[{ text: locales.get_schedule.get, callback_data: "get_schedule" }]]),
+              .concat([
+                [{ text: locales.get_schedule.get, callback_data: "get_schedule" }],
+                [{ text: locales.select_group.command, callback_data: "select_group" }],
+              ]),
           }
         : {
             inline_keyboard: [
@@ -42,7 +45,7 @@ export class GroupsController {
             ],
           };
 
-      if (messageId) {
+      if (messageId || context.callbackQuery) {
         await context.editMessageText(text, {
           reply_markup,
         });
