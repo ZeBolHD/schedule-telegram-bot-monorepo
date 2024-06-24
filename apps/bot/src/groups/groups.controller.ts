@@ -106,6 +106,7 @@ export class GroupsController {
       const reply_markup = {
         inline_keyboard: [
           [{ text: locales.select_group.select_another_group, callback_data: "select_group" }],
+          [{ text: locales.my_groups.command, callback_data: "my_groups" }],
         ],
       };
 
