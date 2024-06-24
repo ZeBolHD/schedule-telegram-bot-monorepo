@@ -15,6 +15,7 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Command("my_groups")
+  @Action("my_groups")
   async myGroups(messageId: number, @Sender("id") senderId: number, @Ctx() context: Context) {
     context.state.handled = true;
     this.logger.log(
